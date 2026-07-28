@@ -1,0 +1,12 @@
+{
+  "name": "Sample Part 107 Operations Manual (demonstration ruleset)",
+  "version": "1.0",
+  "rules": [
+    {"id": "ALT-1", "description": "Maximum altitude 120 m (400 ft) AGL", "metric": "max_alt_agl_m", "op": "<=", "limit": 120},
+    {"id": "DIST-1", "description": "Maximum distance from launch point 500 m (VLOS)", "metric": "max_dist_home_m", "op": "<=", "limit": 500},
+    {"id": "SPD-1", "description": "Maximum groundspeed 19 m/s", "metric": "max_groundspeed_ms", "op": "<=", "limit": 19},
+    {"id": "GPS-1", "description": "Minimum 6 GPS satellites throughout flight", "metric": "min_gps_sats", "op": ">=", "limit": 6},
+    {"id": "BAT-1", "description": "Land with at least 15% battery remaining", "metric": "battery_at_landing_pct", "op": ">=", "limit": 15},
+    {"id": "MODE-1", "description": "No flight-termination or uncontrolled-descent modes", "metric": "modes_flown", "op": "not_contains", "limit": ["TERMINATION", "DESCEND"]}
+  ]
+}

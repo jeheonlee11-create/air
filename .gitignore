@@ -1,0 +1,7 @@
+.venv/
+keys/
+bundles/
+fixtures/*.ulg
+fixtures/dbinfo.json
+__pycache__/
+*.pyc
