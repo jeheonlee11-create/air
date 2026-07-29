@@ -1,0 +1,32 @@
+WEBVTT
+NOTE AIR website demo — captions timed to a 75-second cut; retime after recording.
+
+00:00:00.000 --> 00:00:08.500
+This is a real drone crash — a public flight log anyone can download.
+
+00:00:08.500 --> 00:00:14.000
+The owner's entire analysis was one sentence: "my drone started to gain altitude sharply."
+
+00:00:14.000 --> 00:00:21.000
+Drop that log into AIR. Under a second later, it's an incident record.
+
+00:00:21.000 --> 00:00:30.000
+Seven findings, each typed: measured evidence, the threshold it tripped, and where that threshold comes from.
+
+00:00:30.000 --> 00:00:35.500
+Battery hit zero percent — while it was still flying.
+
+00:00:35.500 --> 00:00:44.000
+AIR checked the flight against written procedures. Altitude limit 120 meters: the flight hit 120.04.
+
+00:00:44.000 --> 00:00:53.000
+Two independent altitude sensors disagree by twenty meters at the crash. AIR reports the conflict — it doesn't pick a winner.
+
+00:00:53.000 --> 00:01:02.000
+And the whole record is sealed: hash tree, signature, offline verifier. Change one byte, verification fails.
+
+00:01:02.000 --> 00:01:08.500
+It's early: PX4 logs only, a 100-log public evaluation, every limitation published.
+
+00:01:08.500 --> 00:01:15.000
+If you investigate real incidents, bring one log and twenty minutes. air.findanything.dev

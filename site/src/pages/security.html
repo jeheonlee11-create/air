@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js legal">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security — AIR</title>
+<meta name="description" content="How to report security issues in the AIR website or software, and what this site does and doesn't do.">
+<link rel="canonical" href="https://air.findanything.dev/security.html">
+<meta name="theme-color" content="#131211">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-head"><div class="wrap">
+  <a class="wordmark" href="/" aria-label="AIR home"><span class="dot" aria-hidden="true"></span>AIR</a>
+  <nav class="site-nav" aria-label="Main"><a href="/">Home</a><a href="/contact.html">Contact</a></nav>
+</div></header>
+<main id="main">
+  <h1>Security</h1>
+  <p class="ts">Effective 2026-07-28</p>
+
+  <h2>Reporting a vulnerability</h2>
+  <p>Email <a href="mailto:security@findanything.dev">security@findanything.dev</a> with steps
+  to reproduce. We aim to acknowledge within 72 hours. Please practice coordinated
+  disclosure: give us 90 days (or agree on a timeline) before publishing. There is no bug
+  bounty — this is a pre-revenue independent project — but we will credit reporters in the
+  repository changelog if they wish.</p>
+
+  <h2>Scope</h2>
+  <ul>
+    <li><strong>This website</strong> — a static site with no server-side code, no
+    authentication, no cookies, no user data storage, and no upload endpoints. Its attack
+    surface is intentionally minimal, and it ships a restrictive Content-Security-Policy and
+    security headers.</li>
+    <li><strong>The AIR software</strong> — the analysis engine, evidence format, and
+    standalone verifier. Reports about the cryptographic record format (Merkle construction,
+    signature handling, verifier bypasses, tamper-detection gaps) are especially welcome:
+    the record is designed to be challenged.</li>
+  </ul>
+
+  <h2>What the record's cryptography claims — and doesn't</h2>
+  <p>AIR's record format proves integrity: that a record has not changed since signing and
+  that source files match their committed digests. It does not prove signer identity (no key
+  distribution infrastructure exists yet), does not validate timestamp-authority certificate
+  chains in the bundled verifier, and does not make any legal claim. If you can break the
+  integrity property, we want to know urgently.</p>
+
+  <h2>Out of scope</h2>
+  <p>Volume-based attacks on the static host, reports about third-party services (Cloudflare),
+  and social engineering of the developer.</p>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <p class="foot-legal"><a href="/">Home</a> · <a href="/privacy.html">Privacy</a> ·
+  <a href="/terms.html">Terms</a> · <a href="/contact.html">Contact</a> ·
+  <a href="mailto:security@findanything.dev">security@findanything.dev</a></p>
+</div></footer>
+</body>
+</html>

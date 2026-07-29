@@ -10,3 +10,4 @@ demo/demo_runs/
 eval/run.log
 eval/rerun.log
 *.zip
+site/public/

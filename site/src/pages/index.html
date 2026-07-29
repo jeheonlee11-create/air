@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIR — Turn raw drone telemetry into an incident record you can verify</title>
+<meta name="description" content="AIR reconstructs drone incidents from raw telemetry: synchronized timelines, deterministic findings, procedure-conformance verdicts, cross-source conflict analysis, and signed records that verify offline.">
+<link rel="canonical" href="https://air.findanything.dev/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AIR — Airspace Incident Record">
+<meta property="og:title" content="AIR — Turn raw drone telemetry into an incident record you can verify">
+<meta property="og:description" content="Deterministic incident reconstruction from flight logs: timelines, procedure verdicts, sensor-conflict findings, and signed, offline-verifiable records. Shown here on a real public crash log.">
+<meta property="og:url" content="https://air.findanything.dev/">
+<meta property="og:image" content="https://air.findanything.dev/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AIR — Turn raw drone telemetry into an incident record you can verify">
+<meta name="twitter:description" content="Deterministic incident reconstruction from flight logs, demonstrated on a real public crash log. Signed records, offline verification, honest limitations.">
+<meta name="twitter:image" content="https://air.findanything.dev/assets/img/og.png">
+<meta name="theme-color" content="#131211">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/css/site.css">
+<script src="/assets/js/site.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="wordmark" href="/" aria-label="AIR home"><span class="dot" aria-hidden="true"></span>AIR</a>
+    <nav class="site-nav" aria-label="Main">
+      <a href="#product">Product</a>
+      <a href="#how">How it works</a>
+      <a href="#record">Evidence record</a>
+      <a href="#evaluation">Evaluation</a>
+      <a href="#limitations">Limitations</a>
+      <a class="nav-cta" href="#request-demo">Request a demo</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="product" aria-labelledby="hero-h">
+  <div class="wrap">
+    <p class="kicker">Airspace Incident Record · drone incident-investigation software</p>
+    <h1 id="hero-h">Turn raw drone telemetry into an incident record you can verify.</h1>
+    <p class="lede">AIR reconstructs timelines, checks your procedures, identifies conflicting
+    telemetry, and produces a signed record — while clearly separating measured evidence,
+    deterministic calculations, inferences, and unknowns. Built for fleet operators,
+    manufacturer support teams, safety and reliability teams, insurers and investigators,
+    and UAS research sites.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="#crash">See the real crash reconstruction</a>
+      <a class="btn btn-ghost" href="#request-demo">Request a design-partner demo</a>
+    </div>
+    <!--#include:hero_visual.svg-->
+    <p class="hero-note">Real data: EKF altitude trace from public PX4 corpus log
+      <a href="https://review.px4.io/plot_app?log=75957ba9-f979-430d-a49c-8ef6e5ceec12" rel="noopener">75957ba9</a>,
+      analyzed by the AIR engine. No stock imagery anywhere on this page — every chart is
+      generated from this flight.</p>
+  </div>
+</section>
+
+<!-- ============ CRASH RECONSTRUCTION ============ -->
+<section id="crash" aria-labelledby="crash-h">
+  <div class="wrap">
+    <p class="kicker">Real crash reconstruction</p>
+    <h2 id="crash-h">One real flight. 594.7 seconds of log. Seven findings.</h2>
+    <p class="lede">Everything below was produced by the AIR engine from one publicly
+    available flight log — no staging, no cherry-picked mock data. You can download the same
+    log from the public corpus and reproduce every number.</p>
+
+    <div class="provenance">
+      <p><strong>Source &amp; provenance.</strong> Public log
+      <span class="mono">75957ba9-f979-430d-a49c-8ef6e5ceec12</span> from the
+      <a href="https://review.px4.io/plot_app?log=75957ba9-f979-430d-a49c-8ef6e5ceec12" rel="noopener">PX4 Flight Review public database</a>.
+      Octorotor · flight 2023-02-26 · uploaded 2023-03-02 · uploader rating
+      <span class="mono">crash_sw_hw</span>.</p>
+      <p class="small">The uploader's own description — the entire human analysis on file:
+      <em>"at minute 12, my drone started to gain altitude sharply…"</em></p>
+      <p class="small">The corpus is publicly downloadable but carries no explicit
+      redistribution license, so this page shows <strong>derived data and analysis results
+      with citation</strong>, not the raw log file. Charts are downsampled from the real
+      telemetry; annotation positions use the exact evidence timestamps in the record.</p>
+    </div>
+
+    <h3>Altitude, by source</h3>
+    <div class="panel-chart">
+      <!--#include:chart_altitude.svg-->
+      <div class="legend" aria-hidden="true">
+        <span><svg width="18" height="4" aria-hidden="true"><rect width="18" height="3" fill="#2563af"/></svg> Barometer</span>
+        <span><svg width="18" height="4" aria-hidden="true"><rect width="18" height="3" fill="#0e7d6f"/></svg> GPS</span>
+        <span><svg width="18" height="4" aria-hidden="true"><rect width="18" height="3" fill="#c2410c"/></svg> EKF fused</span>
+        <span class="ts">sources use different reference datums; AIR corrects the +20.4&#8202;m reference offset before comparing them</span>
+      </div>
+    </div>
+
+    <h3>Battery</h3>
+    <div class="panel-chart">
+      <!--#include:chart_battery.svg-->
+      <div class="legend" aria-hidden="true">
+        <span><svg width="18" height="4" aria-hidden="true"><rect width="18" height="3" fill="#2563af"/></svg> Voltage</span>
+        <span><svg width="18" height="4" aria-hidden="true"><rect width="18" height="3" fill="#c2410c"/></svg> Estimated remaining</span>
+      </div>
+    </div>
+
+    <div class="scrub">
+      <label for="scrubber">Scrub the flight timeline</label>
+      <input type="range" id="scrubber" min="0" max="594.7" step="0.1" value="0"
+             aria-describedby="scrub-readout">
+      <div class="scrub-readout" id="scrub-readout" aria-live="polite"></div>
+    </div>
+
+    <h3>The final fifteen seconds, from the record's event timeline</h3>
+    <div class="tbl-scroll">
+    <table>
+      <caption class="small">Timestamps are relative to log start; the flight also carries a
+      UTC anchor from GPS time. All rows are real events extracted from the log.</caption>
+      <thead><tr><th scope="col">T+</th><th scope="col">Event</th><th scope="col">Type</th></tr></thead>
+      <tbody>
+        <tr><td class="num">579.2&#8202;s</td><td>Estimated battery remaining reaches 0&#8202;%</td><td><span class="tag tag-evidence">Raw evidence</span></td></tr>
+        <tr><td class="num">586.9&#8202;s</td><td>Altitude peaks at 120.04&#8202;m — procedure limit is 120&#8202;m</td><td><span class="tag tag-verdict">Procedure verdict</span></td></tr>
+        <tr><td class="num">591.7&#8202;s</td><td>Failsafe activated</td><td><span class="tag tag-evidence">Raw evidence</span></td></tr>
+        <tr><td class="num">592.5–594.0&#8202;s</td><td>Failure detector trips on ROLL, three times</td><td><span class="tag tag-evidence">Raw evidence</span></td></tr>
+        <tr><td class="num">594.4&#8202;s</td><td>Connection to ground station lost</td><td><span class="tag tag-evidence">Raw evidence</span></td></tr>
+        <tr><td class="num">594.6&#8202;s</td><td>Log ends while the vehicle is still armed at &#8776;12.6&#8202;m — consistent with sudden power loss; the cause is not determinable from this log alone</td><td><span class="tag tag-infer">Inference</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>Findings, exactly as the record states them</h3>
+    <div class="findings">
+      <article class="finding f-crit">
+        <span class="code">BAT-LOW · critical</span>
+        <h3>Battery depleted to 0% in flight</h3>
+        <span class="tag tag-evidence">Raw evidence</span><span class="tag tag-calc">Calculation</span>
+        <p>Estimated remaining fell to 0&#8202;% at T+579.2&#8202;s while airborne. Below 15&#8202;%
+        most operations manuals require immediate landing.</p>
+        <div class="evrow">evidence: battery_status.remaining = 0.0 · threshold: warn &lt;15%, fail &lt;7% · basis: dronekit-la low_battery_threshold</div>
+      </article>
+      <article class="finding f-crit">
+        <span class="code">INT-TRUNC · critical</span>
+        <h3>Log ends in flight</h3>
+        <span class="tag tag-evidence">Raw evidence</span><span class="tag tag-infer">Inference</span>
+        <p>The log terminates while the vehicle is still armed at &#8776;12.6&#8202;m. An in-air
+        truncation is <em>consistent with</em> sudden power loss, controller brownout, or
+        break-up — stated as an inference, never as a determined cause.</p>
+        <div class="evrow">evidence: vehicle_local_position.z = 12.64&#8202;m at final sample · threshold: final altitude &gt;3.0&#8202;m while armed · basis: ArduPilot LogAnalyzer TestBrownout, Copter-4.5.0</div>
+      </article>
+      <article class="finding f-crit">
+        <span class="code">PROC-ALT-1 · critical</span>
+        <h3>Procedure violated: maximum altitude</h3>
+        <span class="tag tag-verdict">Procedure verdict</span>
+        <p>Rule ALT-1 requires max altitude &#8804;120&#8202;m; the flight recorded
+        <strong>120.04&#8202;m</strong>. A marginal violation, reported at full precision —
+        in an incident record, precision is credibility.</p>
+        <div class="evrow">observed: 120.04 · limit: 120 · ruleset: sample Part 107-style demonstration ruleset (operators supply their own)</div>
+      </article>
+      <article class="finding f-crit">
+        <span class="code">PROC-BAT-1 · critical</span>
+        <h3>Procedure violated: landing battery reserve</h3>
+        <span class="tag tag-verdict">Procedure verdict</span>
+        <p>Rule BAT-1 requires &#8805;15&#8202;% battery at landing; the flight ended at
+        <strong>0.00&#8202;%</strong> — and because the log truncates mid-air, the record notes
+        this is "battery at last evidence."</p>
+        <div class="evrow">observed: 0.00 · limit: 15 · ruleset: sample demonstration ruleset</div>
+      </article>
+      <article class="finding f-warn">
+        <span class="code">CONF-ALT-BARO-GPS · warning</span>
+        <h3>Two altitude sources disagree by 20.3&#8202;m</h3>
+        <span class="tag tag-conflict">Conflict</span>
+        <p>After correcting the +20.4&#8202;m reference offset, barometer and GPS altitude
+        diverged up to 20.3&#8202;m at T+580.5&#8202;s. One of these sources is wrong — the
+        record quotes both and takes no side.</p>
+        <div class="evrow">baro: 204.73&#8202;m · GPS: 164.01&#8202;m · thresholds: warn &gt;10&#8202;m, fail &gt;25&#8202;m · basis: offset-corrected cross-source residual (labeled heuristic)</div>
+      </article>
+      <article class="finding f-warn">
+        <span class="code">BAT-SAG · warning</span>
+        <h3>Severe voltage sag</h3>
+        <span class="tag tag-evidence">Raw evidence</span><span class="tag tag-calc">Calculation</span>
+        <p>Voltage sagged from 31.30&#8202;V at flight start to 12.74&#8202;V (59&#8202;%),
+        consistent with a degraded or overloaded battery — worded as an indicator,
+        with its threshold labeled a heuristic.</p>
+        <div class="evrow">evidence: battery_status.voltage_filtered_v · threshold: sag &gt;25% of flight-start voltage (heuristic)</div>
+      </article>
+      <article class="finding f-warn">
+        <span class="code">EKF-MAGNETOMETER · warning</span>
+        <h3>Estimator rejected heading measurements</h3>
+        <span class="tag tag-evidence">Raw evidence</span><span class="tag tag-infer">Inference</span>
+        <p>The EKF's magnetometer innovation test ratio peaked at 2.38 — the flight
+        controller's own statistics rejecting its heading sensor. An indicator that demands
+        corroboration, not a conclusion.</p>
+        <div class="evrow">peak ratio: 2.384 at T+578.4&#8202;s · thresholds: amber &gt;0.5, red &gt;1.0 · basis: PX4 Tools/ecl_ekf convention</div>
+      </article>
+      <article class="finding f-info">
+        <span class="code">stated unknowns</span>
+        <h3>What AIR does not know</h3>
+        <span class="tag tag-unknown">Unknown</span>
+        <p>Why power was lost. Whether the aircraft was damaged before flight. What happened
+        after the log ends — no impact or disarm was recorded. The record lists what is
+        missing instead of papering over it, and marks any rule it cannot evaluate
+        <span class="mono">NOT_EVALUABLE</span>.</p>
+        <div class="evrow">single-log analysis · no maintenance, weather, or wreckage evidence ingested · uploader's description is the uploader's, not AIR's</div>
+      </article>
+    </div>
+
+    <div class="epistemics" role="note">
+      <strong>Every statement is typed:</strong>
+      <span class="tag tag-evidence">Raw evidence</span>
+      <span class="tag tag-calc">Calculation</span>
+      <span class="tag tag-verdict">Procedure verdict</span>
+      <span class="tag tag-conflict">Conflict</span>
+      <span class="tag tag-infer">Inference</span>
+      <span class="tag tag-unknown">Unknown</span>
+      <span class="small">— measured values, deterministic rules with cited thresholds,
+      PASS/FAIL against supplied procedures, cross-source disagreements, interpretation
+      clearly marked, and honest gaps.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="sec-dark" id="how" aria-labelledby="how-h">
+  <div class="wrap">
+    <p class="kicker">How AIR works</p>
+    <h2 id="how-h">From log file to verifiable record, deterministically.</h2>
+    <p class="lede">No machine-learning verdicts. Every step is a rule you can read, with a
+    threshold that cites its source. The same log produces byte-identical analysis every
+    time.</p>
+    <ol class="pipeline">
+      <li><h3>Ingest</h3><p>A PX4 flight log and your written procedures as a
+        machine-readable ruleset.</p></li>
+      <li><h3>Normalize</h3><p>Firmware layouts drift across versions — topics and units are
+        aliased into one normalized schema.</p></li>
+      <li><h3>Reconstruct</h3><p>One synchronized timeline: telemetry series and discrete
+        events on a common clock, UTC-anchored when GPS time allows.</p></li>
+      <li><h3>Analyze</h3><p>Deterministic analyzers for battery, GPS quality, estimator
+        health, vibration, and log integrity — each finding carries its threshold and
+        basis.</p></li>
+      <li><h3>Cross-check</h3><p>Independent sensors are compared; disagreements become
+        findings that quote both sources. Agreement is stated too.</p></li>
+      <li><h3>Check procedures</h3><p>Your rules, evaluated over the flight window:
+        PASS, FAIL, or NOT&#8202;EVALUABLE — missing data is never a silent pass.</p></li>
+      <li><h3>Sign</h3><p>The record and source-file digests are committed to an RFC&#8202;9162
+        Merkle tree; the root is Ed25519-signed, with an optional RFC&#8202;3161
+        timestamp.</p></li>
+      <li><h3>Verify</h3><p>A standalone ~200-line verifier checks the bundle offline —
+        built to be read by the other side's expert, no network, no trust in any
+        vendor cloud.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ EVIDENCE RECORD ============ -->
+<section id="record" aria-labelledby="record-h">
+  <div class="wrap">
+    <p class="kicker">The evidence record</p>
+    <h2 id="record-h">A record built to be challenged.</h2>
+    <p class="lede">The output isn't a dashboard — it's an incident record: findings with
+    evidence samples, a conformance table, the full event timeline, and integrity
+    cryptography, in one bundle anyone can verify without trusting us.</p>
+
+    <h3>Procedure conformance — this flight, real output</h3>
+    <div class="tbl-scroll">
+    <table>
+      <caption class="small">Ruleset: bundled sample Part 107-style demonstration ruleset.
+      In real use, operators supply their own ops-manual rules. Six quantitative rule types
+      are supported today.</caption>
+      <thead><tr><th scope="col">Rule</th><th scope="col">Requirement</th><th scope="col">Observed</th><th scope="col">Verdict</th></tr></thead>
+      <tbody>
+        <tr><td class="num">ALT-1</td><td>Maximum altitude 120&#8202;m AGL</td><td class="num">120.04&#8202;m</td><td><span class="verdict v-fail">FAIL</span></td></tr>
+        <tr><td class="num">DIST-1</td><td>Max distance from launch 500&#8202;m</td><td class="num">356.95&#8202;m</td><td><span class="verdict v-pass">PASS</span></td></tr>
+        <tr><td class="num">SPD-1</td><td>Maximum groundspeed 19&#8202;m/s</td><td class="num">17.88&#8202;m/s</td><td><span class="verdict v-pass">PASS</span></td></tr>
+        <tr><td class="num">GPS-1</td><td>Minimum 6 GPS satellites</td><td class="num">min 20</td><td><span class="verdict v-pass">PASS</span></td></tr>
+        <tr><td class="num">BAT-1</td><td>Land with &#8805;15% battery</td><td class="num">0.00&#8202;%</td><td><span class="verdict v-fail">FAIL</span></td></tr>
+        <tr><td class="num">MODE-1</td><td>No termination/uncontrolled-descent modes</td><td class="num">none flown</td><td><span class="verdict v-pass">PASS</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="small">When required telemetry is missing, the verdict is
+    <span class="verdict v-ne">NOT&#8202;EVALUABLE</span> — with what's missing and why. On our
+    evaluation sample, 79 of 99 parsed logs were fully evaluable and every gap was reported.</p>
+
+    <h3>Record integrity</h3>
+    <div class="integrity">
+      <h3>This exact analysis, sealed</h3>
+      <p class="hash">merkle root (RFC 9162) · 2dad81962328718c79affa8c3a575937eaa766c8aea95fe2e2f81be1feee4f75<br>
+      leaf 1 · report.json (canonical bytes)<br>
+      leaf 2 · 75957ba9….ulg · sha256 4542956597d8d1a9…<br>
+      leaf 3 · sample_ops_manual.json · sha256 f29e0240ad1bb97a…<br>
+      signature · Ed25519 over the root · timestamp · RFC 3161 (optional; skipped in this regeneration)</p>
+      <p class="vline">$ python3 verify.py<br>VERIFICATION PASSED — record is intact and untampered. (exit 0)</p>
+      <p>Change one byte of any finding and verification fails — we test exactly that.
+      What this proves: the record hasn't changed since signing, and the source files match
+      their digests. What it deliberately does not prove: who signed it, that the analysis
+      is true, or anything legal. Cryptography seals the record; it doesn't decide the
+      case.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EVALUATION ============ -->
+<section class="rule-top" id="evaluation" aria-labelledby="eval-h">
+  <div class="wrap">
+    <p class="kicker">Evaluation</p>
+    <h2 id="eval-h">Measured on public data, published with its caveats.</h2>
+    <p class="lede">A seeded, stratified sample of 120 logs from the public PX4 Flight Review
+    index — crash-labeled, healthy-labeled, and unlabeled. 20 exceeded a pre-set 20&#8202;MB
+    size cap; <strong>100 were processed</strong>. Metrics were pre-registered before the
+    first run; development fixtures were excluded.</p>
+
+    <div class="stats">
+      <div class="stat"><span class="n">99<sub>/100</sub></span><span class="l">logs ingested successfully; the one failure was rejected cleanly</span></div>
+      <div class="stat"><span class="n">0</span><span class="l">uncaught pipeline errors on the sample</span></div>
+      <div class="stat"><span class="n">10<sub>/10</sub></span><span class="l">repeated runs produced byte-identical analysis</span></div>
+      <div class="stat"><span class="n">5<sub>/5</sub></span><span class="l">clean bundles verified; 5/5 tampered bundles caught</span></div>
+      <div class="stat"><span class="n">3</span><span class="l">logs contained no flight — AIR said so instead of inventing findings</span></div>
+      <div class="stat"><span class="n">0.18<sub>s</sub></span><span class="l">mean analysis time per log</span></div>
+    </div>
+
+    <h3>The ends-in-flight signal, against noisy human labels</h3>
+    <div class="tbl-scroll">
+    <table class="confusion">
+      <caption class="small">n=66 labeled, non-abstained logs. Labels are uploader-assigned
+      ratings, not verified ground truth.</caption>
+      <thead><tr><th scope="col"></th><th scope="col">Labeled crash</th><th scope="col">Labeled healthy</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Signal fired</th><td class="num">4</td><td class="num"><strong>0</strong></td></tr>
+        <tr><th scope="row">Did not fire</th><td class="num">30</td><td class="num">32</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p><strong>Zero false positives; low recall (12%).</strong> Most crashes keep logging all
+    the way to the ground, which this signal deliberately does not claim to catch. AIR is an
+    investigation layer that almost never cries wolf — not a general crash classifier.</p>
+
+    <div class="caveats" role="note">
+      <h3>Read before quoting these numbers</h3>
+      <ul>
+        <li>The corpus index contains 436,637 logs. <strong>We evaluated 100.</strong> Nothing here extends beyond them.</li>
+        <li>Labels are uploader-assigned and noisy — one "crash"-labeled log in our fixtures turned out to be a bench test that never left the ground.</li>
+        <li>Round 2 of the evaluation followed an ingestion-coverage fix discovered in round 1 (an arming-topic aliasing gap on older firmware). Both rounds and the methodology are published in the repository.</li>
+        <li>A fresh-seed confirmation run has not yet been performed. Until it is, treat these as internal results.</li>
+        <li>The 20&#8202;MB size cap biases the sample toward shorter flights — a known, disclosed bias.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMPARISON ============ -->
+<section class="tight rule-top" id="comparison" aria-labelledby="cmp-h">
+  <div class="wrap">
+    <p class="kicker">Where AIR sits</p>
+    <h2 id="cmp-h">Against categories, not strawmen.</h2>
+    <p class="lede">Log viewers are good at plots. Fleet platforms are good at operations and
+    compliance reporting. Manual investigation is the gold standard — and expensive. AIR's
+    lane is the investigator-grade record.</p>
+    <div class="tbl-scroll">
+    <table class="compare">
+      <thead><tr>
+        <th scope="col"></th>
+        <th scope="col">Traditional log viewers</th>
+        <th scope="col">Fleet &amp; compliance platforms</th>
+        <th scope="col">Manual investigation</th>
+        <th scope="col" class="air-col">AIR</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Telemetry visualization</th><td class="yes">shown publicly</td><td class="yes">shown publicly</td><td class="maybe">expert-made</td><td class="air-col yes">yes — this page runs on it</td></tr>
+        <tr><th scope="row">Automated deterministic findings</th><td class="maybe">partial — diagnostic plots, expert-read</td><td class="maybe">anomaly trends shown publicly on some; specifics vary</td><td class="maybe">human judgment</td><td class="air-col yes">yes, thresholds cited</td></tr>
+        <tr><th scope="row">Procedure checks vs your own rules</th><td class="unk">not shown publicly</td><td class="unk">not shown publicly (checklists &amp; currency alerts are shown; telemetry-vs-SOP verdicts are not)</td><td class="yes">yes — hours of work</td><td class="air-col yes">yes — PASS/FAIL/NOT&#8202;EVALUABLE</td></tr>
+        <tr><th scope="row">Cross-source conflict reporting</th><td class="unk">not shown publicly (expert-read estimator plots exist)</td><td class="unk">not shown publicly</td><td class="maybe">if the expert thinks to check</td><td class="air-col yes">yes, both sources quoted</td></tr>
+        <tr><th scope="row">Missing-evidence reporting</th><td class="unk">not shown publicly</td><td class="unk">not shown publicly</td><td class="maybe">varies by investigator</td><td class="air-col yes">yes — gaps are findings</td></tr>
+        <tr><th scope="row">Signed incident record</th><td class="unk">not shown publicly</td><td class="unk">not shown publicly</td><td class="maybe">no</td><td class="air-col yes">yes — Merkle + Ed25519 + optional RFC&#8202;3161</td></tr>
+        <tr><th scope="row">Offline verification</th><td class="unk">not shown publicly</td><td class="unk">not shown publicly</td><td class="maybe">n/a</td><td class="air-col yes">yes — standalone verifier</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="legendline">"Not shown publicly" records what we could not find on public
+    product pages as of July 2026. It is <em>not</em> a claim that a capability doesn't
+    exist — vendors ship things their websites don't describe.</p>
+  </div>
+</section>
+
+<!-- ============ LIMITATIONS ============ -->
+<section class="rule-top" id="limitations" aria-labelledby="lim-h">
+  <div class="wrap">
+    <p class="kicker">Limitations</p>
+    <h2 id="lim-h">What AIR can't do yet — stated before you ask.</h2>
+    <p class="lede">An incident-record tool that oversells itself defeats its own purpose.
+    These are the current boundaries, kept current in the repository.</p>
+    <div class="limits">
+      <div class="limit"><span class="mono-k">FORMATS</span><h3>PX4 .ulg only today</h3><p>ArduPilot dataflash and DJI logs are not implemented. They're the roadmap's top items — DJI additionally depends on a revocable vendor key.</p></div>
+      <div class="limit"><span class="mono-k">PROCEDURES</span><h3>Six quantitative rule types</h3><p>Altitude, distance, speed, GPS count, landing battery, forbidden modes. Real ops manuals also contain weather minima, airspace, and crew rules AIR can't express yet.</p></div>
+      <div class="limit"><span class="mono-k">ALTITUDE</span><h3>EKF-origin relative, not terrain AGL</h3><p>"AGL" altitude is relative to the arming origin (barometric fallback), not terrain-corrected. Over sloping terrain the number diverges from true AGL.</p></div>
+      <div class="limit"><span class="mono-k">CRYPTOGRAPHY</span><h3>Integrity, not truth</h3><p>The signature proves the record hasn't changed and sources match digests. It does not prove signer identity, analysis correctness, legal compliance, or admissibility.</p></div>
+      <div class="limit"><span class="mono-k">EVALUATION</span><h3>100 processed logs</h3><p>Public evaluation covers a 100-log seeded sample, not the 436,637-log corpus, and a fresh-seed confirmation run is still owed.</p></div>
+      <div class="limit"><span class="mono-k">SCOPE</span><h3>Single-source evidence today</h3><p>Weather, Remote ID, and detection-alert ingest are roadmap, not product. Today's records are built from the flight log plus your procedures.</p></div>
+      <div class="limit"><span class="mono-k">JUDGMENT</span><h3>Not an investigator</h3><p>AIR is not a guaranteed crash detector and not a replacement for a trained investigator. It prepares the evidence a human decides with.</p></div>
+      <div class="limit"><span class="mono-k">STAGE</span><h3>No customers yet</h3><p>AIR is pre-revenue with no customers, partnerships, or regulatory approval. That's why the ask below is a conversation, not a contract.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="sec-dark" id="request-demo" aria-labelledby="cta-h">
+  <div class="wrap">
+    <p class="kicker">Design partners</p>
+    <h2 id="cta-h">Request a 20-minute design-partner conversation.</h2>
+    <div class="cta-grid">
+      <div>
+        <p class="lede">We're looking for a small number of design partners who investigate
+        real incidents: fleet operators, manufacturer support teams, safety teams, insurers
+        and investigators, and university or test-site programs.</p>
+        <p class="lede">You bring one real flight log and twenty minutes. We'll show the
+        record AIR produces from it and listen hard to what's missing. PX4 fleets can run it
+        today; ArduPilot and DJI teams shape the roadmap.</p>
+        <p class="cta-note">This form composes an email in <strong>your own mail client</strong> —
+        nothing is sent, stored, or tracked by this site. Prefer to write directly?
+        <span class="mail-fallback"><a href="mailto:hello@findanything.dev?subject=AIR%20design-partner%20conversation">hello@findanything.dev</a></span></p>
+      </div>
+      <form class="cta-form" id="demo-form" aria-labelledby="cta-h">
+        <label for="f-name">Name</label>
+        <input id="f-name" name="name" autocomplete="name" required>
+        <label for="f-email">Work email</label>
+        <input id="f-email" name="email" type="email" autocomplete="email" required>
+        <label for="f-org">Organization</label>
+        <input id="f-org" name="org" autocomplete="organization" required>
+        <label for="f-role">Role</label>
+        <input id="f-role" name="role" autocomplete="organization-title">
+        <label for="f-fleet">Fleet / autopilot type</label>
+        <select id="f-fleet" name="fleet">
+          <option>PX4</option><option>ArduPilot</option><option>DJI</option>
+          <option>Mixed fleet</option><option>Other / custom</option>
+        </select>
+        <label for="f-count">Approximate number of aircraft</label>
+        <input id="f-count" name="count" inputmode="numeric">
+        <label for="f-incident">Investigated an incident in the last 12 months?</label>
+        <select id="f-incident" name="incident">
+          <option>Yes</option><option>No</option><option>Prefer not to say</option>
+        </select>
+        <label for="f-msg">Anything else (optional)</label>
+        <textarea id="f-msg" name="msg"></textarea>
+        <button class="btn btn-primary" type="submit">Compose email to hello@findanything.dev</button>
+        <p class="cta-note nojs-cta">JavaScript is off — no problem: email
+          <a href="mailto:hello@findanything.dev?subject=AIR%20design-partner%20conversation&body=Name%3A%0AWork%20email%3A%0AOrganization%3A%0ARole%3A%0AFleet%2Fautopilot%20type%3A%0AApprox.%20aircraft%20count%3A%0AIncident%20investigated%20in%20last%2012%20months%3A%0AMessage%3A%0A">hello@findanything.dev</a>
+          with the fields above.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="wordmark" href="/" aria-label="AIR home"><span class="dot" aria-hidden="true"></span>AIR</a>
+        <p class="foot-legal">Airspace Incident Record — drone incident-investigation and
+        evidence-reconstruction software. An independent software project; not incorporated,
+        no customers or revenue yet, and honest about both.</p>
+      </div>
+      <nav class="foot-links" aria-label="Footer">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+        <a href="/security.html">Security</a>
+        <a href="/contact.html">Contact</a>
+      </nav>
+    </div>
+    <p class="foot-legal">Contact: <a href="mailto:hello@findanything.dev">hello@findanything.dev</a> ·
+    security reports: <a href="mailto:security@findanything.dev">security@findanything.dev</a><br>
+    This site is static, sets no cookies, runs no analytics, and makes no external requests.
+    Sample-flight data derives from public PX4 Flight Review corpus log
+    <span class="mono">75957ba9</span>, cited above. AIR analyzes flight logs after the fact;
+    it does not operate, track, monitor, or interfere with any aircraft.</p>
+  </div>
+</footer>
+
+</body>
+</html>
