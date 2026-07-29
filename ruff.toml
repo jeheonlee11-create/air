@@ -1,0 +1,16 @@
+line-length = 100
+target-version = "py311"
+extend-exclude = ["demo/demo_runs", ".venv", "bundles"]
+
+[lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "SIM", "RUF"]
+# BLE001 (blind except) is deliberately NOT enabled repo-wide: the verifier and
+# signature checks must fail closed on any error rather than crash with a
+# traceback an adversary can probe; each such site carries a comment.
+
+[lint.per-file-ignores]
+"tests/*" = ["SIM115"]
+"eval/*" = ["SIM115"]
+"demo/app.py" = ["E402"]
+"eval/harness.py" = ["E402"]
+"eval/rerun_subset.py" = ["E402"]

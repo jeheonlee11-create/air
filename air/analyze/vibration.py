@@ -54,7 +54,7 @@ def analyze(inc: Incident) -> list[Finding]:
         t, v = clip_series(clip, t0, t1)
         if v and (v[-1] - v[0]) > 0:
             n = int(v[-1] - v[0])
-            first_t = next((ts for ts, val in zip(t, v) if val > v[0]), t[0])
+            first_t = next((ts for ts, val in zip(t, v, strict=False) if val > v[0]), t[0])
             findings.append(Finding(
                 code="VIB-CLIP",
                 title=f"Accelerometer clipping occurred ({n} clip events in flight)",

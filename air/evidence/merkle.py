@@ -63,8 +63,8 @@ def inclusion_proof(leaves: list[bytes], index: int) -> list[bytes]:
             return []
         k = _largest_power_of_two_lt(n)
         if m < k:
-            return path(m, hs[:k]) + [_mth(hs[k:])]
-        return path(m - k, hs[k:]) + [_mth(hs[:k])]
+            return [*path(m, hs[:k]), _mth(hs[k:])]
+        return [*path(m - k, hs[k:]), _mth(hs[:k])]
 
     return path(index, hashes)
 

@@ -1,0 +1,2914 @@
+{
+  "summary_round1": {
+    "harness_version": 1,
+    "air_version": "0.1.0",
+    "seed": 42,
+    "sampled": 120,
+    "processed": 100,
+    "download_failed": 0,
+    "skipped_size_cap": 20,
+    "budget_exhausted": 0,
+    "bytes_downloaded": 743695792,
+    "ingest_ok": 99,
+    "unsupported": 1,
+    "pipeline_errors": 0,
+    "pipeline_error_detail": [],
+    "abstained_never_armed": 50,
+    "classification": {
+      "rule": "prediction := critical INT-TRUNC (log ends in flight); labels are uploader-assigned; abstentions excluded",
+      "n": 19,
+      "tp": 1,
+      "fp": 0,
+      "fn": 17,
+      "tn": 1
+    },
+    "conformance": {
+      "mean_evaluable_rules": 2.8585858585858586,
+      "fully_evaluable_logs": 38
+    },
+    "conflict_checked_logs": 38,
+    "determinism": {
+      "n": 10,
+      "all_identical": true,
+      "detail": [
+        {
+          "log_id": "0af74008-6e70-4c9f-817b-4d4cbaf6c765",
+          "identical": true
+        },
+        {
+          "log_id": "477c9497-5a80-4a7e-9e0b-4b7260f1dacd",
+          "identical": true
+        },
+        {
+          "log_id": "7c5aba6c-d83b-48a4-a654-912e4cce5b74",
+          "identical": true
+        },
+        {
+          "log_id": "23be6195-17e2-4862-a047-fdd203b56dc4",
+          "identical": true
+        },
+        {
+          "log_id": "a37211d1-6d2c-4880-9085-034f7e043069",
+          "identical": true
+        },
+        {
+          "log_id": "1566a764-24cb-4e4a-b081-5d9a7a2d2b26",
+          "identical": true
+        },
+        {
+          "log_id": "d2a71b17-ee55-41fe-bd4d-f646119916c8",
+          "identical": true
+        },
+        {
+          "log_id": "d781306c-3691-4885-833e-ee6ec552fb7f",
+          "identical": true
+        },
+        {
+          "log_id": "b20e0b16-0405-4653-b28d-a1e0bc48b784",
+          "identical": true
+        },
+        {
+          "log_id": "64ba6059-88aa-4a0f-85ff-3e5e584239e0",
+          "identical": true
+        }
+      ]
+    },
+    "verification": {
+      "n": 5,
+      "all_clean_pass": true,
+      "all_tamper_detected": true,
+      "detail": [
+        {
+          "log_id": "0af74008-6e70-4c9f-817b-4d4cbaf6c765",
+          "clean_exit": 0,
+          "tampered_exit": 1,
+          "clean_pass": true,
+          "tamper_detected": true
+        },
+        {
+          "log_id": "477c9497-5a80-4a7e-9e0b-4b7260f1dacd",
+          "clean_exit": 0,
+          "tampered_exit": 1,
+          "clean_pass": true,
+          "tamper_detected": true
+        },
+        {
+          "log_id": "7c5aba6c-d83b-48a4-a654-912e4cce5b74",
+          "clean_exit": 0,
+          "tampered_exit": 1,
+          "clean_pass": true,
+          "tamper_detected": true
+        },
+        {
+          "log_id": "23be6195-17e2-4862-a047-fdd203b56dc4",
+          "clean_exit": 0,
+          "tampered_exit": 1,
+          "clean_pass": true,
+          "tamper_detected": true
+        },
+        {
+          "log_id": "a37211d1-6d2c-4880-9085-034f7e043069",
+          "clean_exit": 0,
+          "tampered_exit": 1,
+          "clean_pass": true,
+          "tamper_detected": true
+        }
+      ]
+    },
+    "runtime": {
+      "mean_process_s": 0.17757575757575753,
+      "max_process_s": 0.51,
+      "peak_rss_bytes": 1594589184
+    }
+  },
+  "summary_round2": {
+    "round": 2,
+    "reprocessed": 51,
+    "round2_bytes_downloaded": 489218927,
+    "ingest_ok": 99,
+    "unsupported": 1,
+    "pipeline_errors": 0,
+    "abstained_never_armed": 3,
+    "abstained_by_label": {
+      "crash_pilot": 3
+    },
+    "classification": {
+      "rule": "prediction := critical INT-TRUNC (log ends in flight); labels are uploader-assigned; abstentions excluded",
+      "n": 66,
+      "tp": 4,
+      "fp": 0,
+      "fn": 30,
+      "tn": 32
+    },
+    "conformance": {
+      "mean_evaluable_rules": 5.646464646464646,
+      "fully_evaluable_logs": 79
+    },
+    "conflict_checked_logs": 67,
+    "runtime_mean_process_s": 0.17969696969696966
+  },
+  "per_log": [
+    {
+      "log_id": "0af74008-6e70-4c9f-817b-4d4cbaf6c765",
+      "label": "unlabeled",
+      "size": 1340725,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.05,
+      "fw_commit": "4817c0618a12",
+      "hardware": "PX4_FMU_V6X",
+      "duration_s": 32.37,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 6,
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-MAGNETOMETER",
+        "GPS-EPH",
+        "GPS-FIXLOSS",
+        "GPS-SATS",
+        "INT-NAN",
+        "PROC-BAT-1",
+        "PROC-GPS-1",
+        "PROC-MODE-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "477c9497-5a80-4a7e-9e0b-4b7260f1dacd",
+      "label": "crash_sw_hw",
+      "size": 5757102,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.14,
+      "fw_commit": "c4987e84bc82",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 147.56,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "INT-COVERAGE",
+        "INT-NODISARM",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "7c5aba6c-d83b-48a4-a654-912e4cce5b74",
+      "label": "good",
+      "size": 20834096,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.47,
+      "fw_commit": "e63f9d9bf625",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 469.11,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {},
+      "finding_codes": [],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "23be6195-17e2-4862-a047-fdd203b56dc4",
+      "label": "unlabeled",
+      "size": 7548415,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.19,
+      "fw_commit": "1c8ab2a0d7db",
+      "hardware": "PX4_FMU_V6X",
+      "duration_s": 51.41,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "a37211d1-6d2c-4880-9085-034f7e043069",
+      "label": "crash_pilot",
+      "size": 815083,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.02,
+      "fw_commit": "f252e20eaec7",
+      "hardware": "PX4_SITL",
+      "duration_s": 4.7,
+      "abstained": true,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "INT-NAN",
+        "INT-NOARM"
+      ],
+      "conformance_evaluable": 0,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "1566a764-24cb-4e4a-b081-5d9a7a2d2b26",
+      "label": "good",
+      "size": 6776279,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.19,
+      "fw_commit": "21cc34befbf1",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 189.86,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "d2a71b17-ee55-41fe-bd4d-f646119916c8",
+      "label": "crash_pilot",
+      "size": 153547,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.02,
+      "fw_commit": "4817c0618a12",
+      "hardware": "MICOAIR_H743",
+      "duration_s": 2.97,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 4,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "GPS-EPH",
+        "GPS-FIXLOSS",
+        "GPS-SATS",
+        "INT-NAN",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "9d931092-37d9-458f-8427-952536c3b875",
+      "label": "crash_sw_hw",
+      "status": "skipped_size",
+      "size": 29005016
+    },
+    {
+      "log_id": "d781306c-3691-4885-833e-ee6ec552fb7f",
+      "label": "good",
+      "size": 16442728,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.45,
+      "fw_commit": "748b664ad0df",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 478.86,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "GPS-EPH"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "b20e0b16-0405-4653-b28d-a1e0bc48b784",
+      "label": "good",
+      "size": 20730623,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.46,
+      "fw_commit": "e63f9d9bf625",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 465.99,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {},
+      "finding_codes": [],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "64ba6059-88aa-4a0f-85ff-3e5e584239e0",
+      "label": "good",
+      "size": 14378918,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.35,
+      "fw_commit": "c2e036837045",
+      "hardware": "PX4FMU_V4PRO",
+      "duration_s": 316.21,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "30049cc7-ff72-4a22-916e-db73afa9dd27",
+      "label": "crash_pilot",
+      "size": 18270452,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.35,
+      "fw_commit": "0debe9fda7cc",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 109.82,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "warning": 2
+      },
+      "finding_codes": [
+        "CONF-ALT-BARO-GPS",
+        "INT-NODISARM",
+        "PROC-SPD-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "c170d559-3660-40f6-b7d3-cda1589620fa",
+      "label": "good",
+      "status": "skipped_size",
+      "size": 22534529
+    },
+    {
+      "log_id": "44b4e1f9-de39-4f4c-97cf-0cc668c6e2d6",
+      "label": "crash_pilot",
+      "status": "skipped_size",
+      "size": 34646348
+    },
+    {
+      "log_id": "4b150a53-fa7a-48bf-a47f-87099f902253",
+      "label": "good",
+      "status": "skipped_size",
+      "size": 23282239
+    },
+    {
+      "log_id": "14e1fff8-3407-4601-85de-5e80151c63d9",
+      "label": "crash_pilot",
+      "size": 5028364,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.12,
+      "fw_commit": "99c40407ffd7",
+      "hardware": "MICOAIR_H743_V2",
+      "duration_s": 142.97,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "INT-NAN",
+        "PROC-DIST-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "cb533027-38e0-4b57-a683-9701dec239d3",
+      "label": "unlabeled",
+      "size": 15449156,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.2,
+      "fw_commit": "1ee3b7e77da5",
+      "hardware": "PX4_SITL",
+      "duration_s": 45.78,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "INT-NAN",
+        "INT-NODISARM"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "7b3d3c6b-fb5e-45b1-b508-8c61f58ceed1",
+      "label": "good",
+      "size": 13967074,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.38,
+      "fw_commit": "9d1fa8cee223",
+      "hardware": "PX4FMU_V4PRO",
+      "duration_s": 372.48,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "57b5ab5a-9e0b-4a56-9315-be056da925e0",
+      "label": "unlabeled",
+      "size": 2522560,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.07,
+      "fw_commit": "1dacb4cdef2d",
+      "hardware": "PX4_FMU_V6C",
+      "duration_s": 60.1,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 2,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "BAT-LOW",
+        "BAT-SAG",
+        "CONF-ALT-AGREE",
+        "PROC-BAT-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "64858e02-b9c2-4cc0-8ef4-1f2da98623f6",
+      "label": "crash_pilot",
+      "size": 2765946,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.02,
+      "fw_commit": "e0f016c2b3db",
+      "hardware": "PX4_FMU_V3",
+      "duration_s": 7.81,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": true,
+      "findings_by_severity": {
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "INT-CORRUPT",
+        "INT-NODISARM"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "6acfc1ab-dd2a-4bf0-b7de-d9e65a61d221",
+      "label": "crash_pilot",
+      "size": 4569973,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.14,
+      "fw_commit": "678c3fe8e4b8",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 129.51,
+      "abstained": true,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "INT-NOARM"
+      ],
+      "conformance_evaluable": 0,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "5b7f1df3-48b2-4e7b-9394-b5eacaa79d10",
+      "label": "crash_pilot",
+      "size": 1760468,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.05,
+      "fw_commit": "4817c0618a12",
+      "hardware": "MICOAIR_H743",
+      "duration_s": 51.74,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 6,
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "BAT-LOW",
+        "BAT-SAG",
+        "CONF-ALT-AGREE",
+        "GPS-EPH",
+        "GPS-FIXLOSS",
+        "GPS-SATS",
+        "INT-NAN",
+        "PROC-BAT-1",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "3f59ac49-06ca-4741-8782-8c3617139103",
+      "label": "good",
+      "size": 19558398,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.52,
+      "fw_commit": "9649a9d7a59e",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 526.89,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-VELOCITY"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "d880f06f-a8d9-4571-813b-ae609f5849bd",
+      "label": "unlabeled",
+      "size": 872164,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.03,
+      "fw_commit": "b8c541dd7277",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 21.62,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 2,
+        "warning": 4,
+        "info": 1
+      },
+      "finding_codes": [
+        "BAT-LOW",
+        "BAT-SAG",
+        "EKF-MAGNETOMETER",
+        "INT-COVERAGE",
+        "INT-NAN",
+        "PROC-BAT-1",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false
+    },
+    {
+      "log_id": "8a5bc486-a415-48fa-a364-c78f76cae13c",
+      "label": "good",
+      "size": 20341582,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.45,
+      "fw_commit": "5eb3e695bb50",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 471.87,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 4
+      },
+      "finding_codes": [
+        "EKF-HORIZONTAL",
+        "EKF-MAGNETOMETER",
+        "EKF-VELOCITY",
+        "PROC-SPD-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "b1564ac3-1fca-4264-a7ec-d3f946d1cc06",
+      "label": "unlabeled",
+      "size": 4035958,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.09,
+      "fw_commit": "5b457f43a252",
+      "hardware": "CUAV_X7PRO",
+      "duration_s": 85.8,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "PROC-SPD-1",
+        "VIB-HIGH"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "4a70eb76-3fde-4d63-be13-aa7f599a0955",
+      "label": "unlabeled",
+      "size": 7370996,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.17,
+      "fw_commit": "1c8ab2a0d7db",
+      "hardware": "PX4_FMU_V6C",
+      "duration_s": 58.29,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 3,
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "BAT-LOW",
+        "BAT-SAG",
+        "EKF-VELOCITY",
+        "INT-COVERAGE",
+        "PROC-BAT-1",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false
+    },
+    {
+      "log_id": "14b1a505-9740-440d-ad5a-b02a5a8b1425",
+      "label": "unlabeled",
+      "size": 9941299,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.25,
+      "fw_commit": "1dacb4cdef2d",
+      "hardware": "PX4_FMU_V6C",
+      "duration_s": 81.39,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 3,
+        "info": 1
+      },
+      "finding_codes": [
+        "EKF-MAGNETOMETER",
+        "INT-COVERAGE",
+        "INT-NAN",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false
+    },
+    {
+      "log_id": "937252aa-c692-4c83-9edd-1f416a93039a",
+      "label": "crash_sw_hw",
+      "size": 3057427,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.07,
+      "fw_commit": "50bd148f53f1",
+      "hardware": "PX4FMU_V4",
+      "duration_s": 79.56,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 4,
+        "warning": 1
+      },
+      "finding_codes": [
+        "EKF-HEIGHT",
+        "EKF-HORIZONTAL",
+        "EKF-MAGNETOMETER",
+        "EKF-VELOCITY",
+        "PROC-SPD-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "e6c81215-2f85-4061-9fc8-6aa5ba0c65c7",
+      "label": "crash_sw_hw",
+      "size": 905843,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.03,
+      "fw_commit": "5f4fb744caf3",
+      "hardware": "PX4FMU_V4PRO",
+      "duration_s": 20.84,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {},
+      "finding_codes": [],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "415c7075-3373-4668-b7ff-9527988c0519",
+      "label": "crash_sw_hw",
+      "size": 7529123,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.16,
+      "fw_commit": "1c8ab2a0d7db",
+      "hardware": "PX4_FMU_V6C",
+      "duration_s": 151.39,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 7,
+        "warning": 3
+      },
+      "finding_codes": [
+        "BAT-LOW",
+        "BAT-SAG",
+        "CONF-ALT-BARO-EKF",
+        "CONF-ALT-BARO-GPS",
+        "EKF-FAULT",
+        "EKF-MAGNETOMETER",
+        "EKF-VELOCITY",
+        "INT-NODISARM",
+        "PROC-SPD-1",
+        "VIB-HIGH"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "b39041b3-f691-4f51-baae-70741edf3fb5",
+      "label": "unlabeled",
+      "size": 3639235,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.09,
+      "fw_commit": "d6f12ad1c4f7",
+      "hardware": "PX4_FMU_V6X",
+      "duration_s": 75.05,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "INT-NAN"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "992ecb6b-8410-4bd6-91e2-e82a7fa5e826",
+      "label": "crash_sw_hw",
+      "size": 907326,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.03,
+      "fw_commit": "5a57e82072c4",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 24.02,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 2,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-FAULT",
+        "EKF-MAGNETOMETER",
+        "INT-NODISARM"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "e0a4a2ab-fee4-471a-9bf3-03db90378e44",
+      "label": "crash_sw_hw",
+      "size": 869125,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.03,
+      "fw_commit": "abcfe11c1de8",
+      "hardware": "PX4_FMU_V6C",
+      "duration_s": 20.86,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "warning": 4,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-MAGNETOMETER",
+        "EKF-VELOCITY",
+        "INT-NAN",
+        "INT-NODISARM",
+        "VIB-HIGH"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "b866c267-39f1-45b8-98e7-b6758ba815e4",
+      "label": "good",
+      "status": "skipped_size",
+      "size": 28545833
+    },
+    {
+      "log_id": "bdeaa69e-0a89-45b8-bc7e-9c8e9db5ced6",
+      "label": "crash_pilot",
+      "status": "skipped_size",
+      "size": 35467264
+    },
+    {
+      "log_id": "b3847fca-6ef4-43bf-87b2-6b273c5b6f06",
+      "label": "unlabeled",
+      "size": 12128445,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.28,
+      "fw_commit": "2edf8c1edf74",
+      "hardware": "MICOAIR_H743_V2",
+      "duration_s": 134.34,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 2,
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "INT-COVERAGE",
+        "INT-NAN",
+        "PROC-DIST-1",
+        "PROC-GPS-1",
+        "PROC-SPD-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false
+    },
+    {
+      "log_id": "9193843a-1581-4837-9fb1-9f58cede8a17",
+      "label": "unlabeled",
+      "size": 1198905,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.04,
+      "fw_commit": "1c8ab2a0d7db",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 28.88,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 5,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "GPS-EPH",
+        "GPS-FIXLOSS",
+        "GPS-SATS",
+        "INT-NAN",
+        "PROC-GPS-1",
+        "PROC-MODE-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "59aa9861-a0c8-4f15-aec5-61e3e39be905",
+      "label": "good",
+      "size": 6671584,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.18,
+      "fw_commit": "7060225e1d1b",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 177.44,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 2,
+        "warning": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-BARO-GPS",
+        "EKF-MAGNETOMETER",
+        "PROC-SPD-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "b01babfd-1274-4c2c-8917-038a1d412e9f",
+      "label": "crash_sw_hw",
+      "size": 6208608,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.17,
+      "fw_commit": "e34b452bab1e",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 146.45,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "54b4bda4-4838-4c1f-a552-4c2c1224576e",
+      "label": "crash_sw_hw",
+      "size": 971941,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.02,
+      "fw_commit": "f645637bbda4",
+      "hardware": "MODALAI_VOXL2",
+      "duration_s": 17.95,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "INT-COVERAGE",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false
+    },
+    {
+      "log_id": "574ebae5-b7ec-4d47-8ad6-0f0c8beab24a",
+      "label": "good",
+      "status": "skipped_size",
+      "size": 21096576
+    },
+    {
+      "log_id": "6f8c310c-3b78-4ae2-92b4-24c7922df1d4",
+      "label": "unlabeled",
+      "size": 220670,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.02,
+      "fw_commit": "b8c541dd7277",
+      "hardware": "PX4_FMU_V6X",
+      "duration_s": 1.81,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "98c45e67-838e-4e5e-9789-76f1c5984ce1",
+      "label": "good",
+      "size": 18038947,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.49,
+      "fw_commit": "9649a9d7a59e",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 471.61,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "29215778-5755-4cc3-8bd8-5f5b35bd81b3",
+      "label": "crash_pilot",
+      "status": "skipped_size",
+      "size": 34301160
+    },
+    {
+      "log_id": "10376e80-bf80-4bb3-94fb-f7f93a64fa72",
+      "label": "crash_pilot",
+      "size": 4955485,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.11,
+      "fw_commit": "1c8ab2a0d7db",
+      "hardware": "CUBEPILOT_CUBEORANGE",
+      "duration_s": 98.71,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "VIB-HIGH"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "8496a19f-aea3-4303-8f6e-5ff4cae27db2",
+      "label": "good",
+      "size": 9969838,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.27,
+      "fw_commit": "8b71bb45621d",
+      "hardware": "PX4FMU_V5",
+      "duration_s": 260.19,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "2ce5dd47-7d3c-43ab-9429-facbb6e5c703",
+      "label": "good",
+      "size": 11420133,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.31,
+      "fw_commit": "2c7c876c385b",
+      "hardware": "PX4FMU_V4",
+      "duration_s": 330.13,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "579048b9-825d-437d-9cfa-753c989a0fb0",
+      "label": "good",
+      "size": 20541147,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.45,
+      "fw_commit": "0f79222ff905",
+      "hardware": "PX4FMU_V4PRO",
+      "duration_s": 482.88,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1
+      },
+      "finding_codes": [
+        "BAT-LOW"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "7dbe85eb-b77f-405e-8e54-54c102928283",
+      "label": "crash_sw_hw",
+      "size": 3117319,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.08,
+      "fw_commit": "2e8918da66af",
+      "hardware": "PX4_FMU_V3",
+      "duration_s": 95.3,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-VELOCITY"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "df4f3250-0cdf-4063-8d9b-966879af9768",
+      "label": "good",
+      "size": 13476371,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.37,
+      "fw_commit": "9887c463fdf1",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 368.14,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "INT-NAN"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "1df255ef-a49c-4fbb-8c22-741f1f6cde96",
+      "label": "unlabeled",
+      "size": 15812136,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.31,
+      "fw_commit": "94cb2012792b",
+      "hardware": "PX4_FMU_V6X",
+      "duration_s": 249.03,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "INT-COVERAGE",
+        "INT-NAN",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false
+    },
+    {
+      "log_id": "5795da4e-2ca7-427f-bfd6-04646f58ad18",
+      "label": "crash_sw_hw",
+      "size": 7361222,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.13,
+      "fw_commit": "689db41c57b5",
+      "hardware": "PX4_SITL",
+      "duration_s": 30.76,
+      "abstained": false,
+      "ends_in_flight": true,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 5,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-HORIZONTAL",
+        "EKF-VELOCITY",
+        "INT-NAN",
+        "INT-TRUNC",
+        "PROC-MODE-1",
+        "PROC-SPD-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "12287147-99f4-47e1-9dc0-c81090d3ddf1",
+      "label": "good",
+      "size": 11059036,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.3,
+      "fw_commit": "52fc56a61f09",
+      "hardware": "PX4FMU_V4PRO",
+      "duration_s": 317.01,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "BAT-LOW",
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "513aeff7-13c8-4456-9ce6-845f03ed83d0",
+      "label": "crash_sw_hw",
+      "size": 10606268,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.18,
+      "fw_commit": "689db41c57b5",
+      "hardware": "PX4_SITL",
+      "duration_s": 43.16,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 5,
+        "warning": 3,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-FAULT",
+        "EKF-HEIGHT",
+        "EKF-HORIZONTAL",
+        "EKF-VELOCITY",
+        "INT-NAN",
+        "INT-NODISARM",
+        "PROC-DIST-1",
+        "PROC-SPD-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "ab000218-0904-4f80-b3d4-5b7b709e1197",
+      "label": "good",
+      "size": 11584120,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.31,
+      "fw_commit": "370fddc1158f",
+      "hardware": "PX4FMU_V4",
+      "duration_s": 335.91,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "00a25d12-c11a-46d2-a704-e2abe3fd38c6",
+      "label": "crash_pilot",
+      "status": "skipped_size",
+      "size": 30905541
+    },
+    {
+      "log_id": "e30f7c66-9ee6-4b22-8f5e-8845f6fc4a5d",
+      "label": "unlabeled",
+      "size": 15920949,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.39,
+      "fw_commit": "6ea3539157ca",
+      "hardware": "CUAV_X7PRO",
+      "duration_s": 128.93,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "INT-NAN"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "1c688db0-7eff-4c51-8c40-a14a50ddb65b",
+      "label": "great",
+      "status": "skipped_size",
+      "size": 23063804
+    },
+    {
+      "log_id": "a2b4cf2f-f816-42a1-9fc8-6a6658f7634c",
+      "label": "unlabeled",
+      "size": 2519947,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.07,
+      "fw_commit": "2ecffff7003a",
+      "hardware": "CUBEPILOT_CUBEORANGEPLUS",
+      "duration_s": 50.9,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 5,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "GPS-EPH",
+        "GPS-FIXLOSS",
+        "GPS-SATS",
+        "INT-NAN",
+        "PROC-GPS-1",
+        "PROC-SPD-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "2c752ebf-213c-4eee-85f3-e3f7af7536bc",
+      "label": "unlabeled",
+      "size": 2149952,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.06,
+      "fw_commit": "1555f2bd2229",
+      "hardware": "PX4_FMU_V6C",
+      "duration_s": 43.35,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "9a06be58-26eb-40dc-beb2-911bf57f47fb",
+      "label": "unlabeled",
+      "size": 14505183,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.34,
+      "fw_commit": "518f992d3a04",
+      "hardware": "PX4_FMU_V6C",
+      "duration_s": 125.7,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "INT-COVERAGE",
+        "INT-NAN",
+        "PROC-GPS-1",
+        "VIB-HIGH"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false
+    },
+    {
+      "log_id": "0f9169ef-db99-4eb1-a0a2-cc6b4f9d96be",
+      "label": "good",
+      "status": "skipped_size",
+      "size": 21685914
+    },
+    {
+      "log_id": "82ffef6c-005d-4a93-a79a-68a2ef63404b",
+      "label": "crash_pilot",
+      "size": 8092451,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.17,
+      "fw_commit": "4817c0618a12",
+      "hardware": "MICOAIR_H743_V2",
+      "duration_s": 230.04,
+      "abstained": true,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1,
+        "info": 2
+      },
+      "finding_codes": [
+        "INT-COVERAGE",
+        "INT-NAN",
+        "INT-NOARM"
+      ],
+      "conformance_evaluable": 0,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "db00bdb3-cb39-4f87-af70-e4f8abea45bb",
+      "label": "good",
+      "size": 4362749,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.12,
+      "fw_commit": "060463e8a743",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 121.91,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "e54c4c1f-2800-490b-85ce-f1f5aa41e8bb",
+      "label": "good",
+      "status": "skipped_size",
+      "size": 22065808
+    },
+    {
+      "log_id": "08493f60-ba60-4d38-861d-1ff6f5bc3bae",
+      "label": "crash_pilot",
+      "size": 45543,
+      "status": "processed",
+      "ok": false,
+      "error_class": "unsupported",
+      "error": "Not a parseable PX4 ULog file: ULog header parsed but the file contains no data topics. AIR v0.1.0 supports PX4 .ulg logs only; ArduPilot dataflash and DJI logs are not yet supported.",
+      "process_s": 0.0,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "c921544e-b791-40a8-812f-86cc786b4798",
+      "label": "good",
+      "size": 1282218,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.04,
+      "fw_commit": "a6274bc5ed01",
+      "hardware": "PX4_FMU_V3",
+      "duration_s": 46.65,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-FAULT"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "c7c88a0c-18dc-4685-8be6-24e64d765436",
+      "label": "crash_pilot",
+      "size": 843847,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.02,
+      "fw_commit": "f160743df40b",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 18.67,
+      "abstained": false,
+      "ends_in_flight": true,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 4
+      },
+      "finding_codes": [
+        "EKF-HORIZONTAL",
+        "EKF-VELOCITY",
+        "INT-TRUNC",
+        "PROC-MODE-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "2e1ddd56-c635-44e8-b4dc-d63f587aad3c",
+      "label": "crash_sw_hw",
+      "size": 1196684,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.02,
+      "fw_commit": "3413df19e8d2",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 18.05,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 2,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "BAT-LOW",
+        "CONF-ALT-AGREE",
+        "CONF-ALT-BARO-EKF",
+        "PROC-BAT-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "818934ee-20d0-4268-9931-82cdcd12f19a",
+      "label": "crash_sw_hw",
+      "status": "skipped_size",
+      "size": 35940352
+    },
+    {
+      "log_id": "591798a1-b9f0-4bad-9581-2975725289ed",
+      "label": "good",
+      "size": 11381671,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.31,
+      "fw_commit": "43a125784317",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 292.05,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "BAT-LOW",
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "39683d1a-7683-4b55-b658-70060fcbbc72",
+      "label": "unlabeled",
+      "size": 6035160,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.1,
+      "fw_commit": "f13d5b781164",
+      "hardware": "CUBEPILOT_CUBEORANGE",
+      "duration_s": 20.67,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "3c454745-966f-47ff-beb0-7016e0b5cff8",
+      "label": "crash_pilot",
+      "size": 1181890,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.03,
+      "fw_commit": "a6274bc5ed01",
+      "hardware": "PX4_FMU_V3",
+      "duration_s": 41.05,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 5,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-HEIGHT",
+        "EKF-HORIZONTAL",
+        "EKF-MAGNETOMETER",
+        "EKF-VELOCITY",
+        "PROC-MODE-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "0e30661e-a26a-48f6-8dca-b4f3ff772ede",
+      "label": "good",
+      "size": 3867335,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.12,
+      "fw_commit": "748b664ad0df",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 106.11,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "b98c4b69-7bef-413e-b32e-8ace1481b607",
+      "label": "crash_sw_hw",
+      "size": 2555453,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.07,
+      "fw_commit": "f54a6c2999e1",
+      "hardware": "EAGLE",
+      "duration_s": 66.29,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 8,
+        "warning": 2
+      },
+      "finding_codes": [
+        "EKF-HEIGHT",
+        "EKF-MAGNETOMETER",
+        "GPS-EPH",
+        "GPS-FIXLOSS",
+        "GPS-SATS",
+        "INT-NODISARM",
+        "PROC-BAT-1",
+        "PROC-GPS-1",
+        "PROC-MODE-1",
+        "PROC-SPD-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "cff6417b-d9d1-4e21-a09c-fc2e51bf8a1f",
+      "label": "unlabeled",
+      "size": 3589436,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.09,
+      "fw_commit": "1c8ab2a0d7db",
+      "hardware": "HOLYBRO_KAKUTEH7",
+      "duration_s": 92.7,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "INT-COVERAGE",
+        "INT-NAN",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false
+    },
+    {
+      "log_id": "3445791e-97bb-4fee-9c4b-210d4eb141d6",
+      "label": "unlabeled",
+      "size": 1051778,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.04,
+      "fw_commit": "4a0e65f2331b",
+      "hardware": "HKUST_NXT_DUAL",
+      "duration_s": 26.73,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 3
+      },
+      "finding_codes": [
+        "CONF-ALT-BARO-EKF",
+        "CONF-ALT-BARO-GPS",
+        "EKF-HEIGHT"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "73a4c388-1d76-461b-9e87-cc55ba6fe41d",
+      "label": "good",
+      "size": 10046734,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.22,
+      "fw_commit": "13dc05501158",
+      "hardware": "PX4FMU_V4",
+      "duration_s": 260.19,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {},
+      "finding_codes": [],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "a05e12a8-8605-41f5-ac71-d45f5e48eaa1",
+      "label": "unlabeled",
+      "size": 2965437,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.08,
+      "fw_commit": "71db0903a910",
+      "hardware": "PX4_FMU_V2",
+      "duration_s": 106.57,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "warning": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-BARO-GPS",
+        "EKF-FAULT"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "3f2a9627-cdf3-4034-8209-af1d490c7bbb",
+      "label": "good",
+      "status": "skipped_size",
+      "size": 23501829
+    },
+    {
+      "log_id": "53fa724b-906d-4e93-87fe-5a4f4c2a50b8",
+      "label": "crash_sw_hw",
+      "size": 783103,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.03,
+      "fw_commit": "7f3b17002422",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 20.33,
+      "abstained": false,
+      "ends_in_flight": true,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "INT-TRUNC"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "c0bbb3b7-f682-4af2-a046-7c0802e2602e",
+      "label": "crash_sw_hw",
+      "size": 11183593,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.35,
+      "fw_commit": "c6c173c79189",
+      "hardware": "PX4_FMU_V3",
+      "duration_s": 273.05,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 5,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-HEIGHT",
+        "EKF-HORIZONTAL",
+        "EKF-VELOCITY",
+        "PROC-BAT-1",
+        "PROC-DIST-1",
+        "PROC-SPD-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "bc5d646f-87e9-41a3-b134-2e5c7a8a69c8",
+      "label": "good",
+      "status": "skipped_size",
+      "size": 26359503
+    },
+    {
+      "log_id": "089dd25a-eeeb-4abd-8c82-91a2315c8774",
+      "label": "good",
+      "status": "skipped_size",
+      "size": 32779554
+    },
+    {
+      "log_id": "7bc27145-e615-407c-b005-85d72902b4d4",
+      "label": "good",
+      "size": 8097504,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.18,
+      "fw_commit": "0c0b761c87ad",
+      "hardware": "PX4FMU_V5",
+      "duration_s": 167.34,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "BAT-LOW",
+        "CONF-ALT-AGREE",
+        "PROC-BAT-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "3000211a-674a-4489-aadc-8b16d809cc7b",
+      "label": "crash_pilot",
+      "size": 378061,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.02,
+      "fw_commit": "4817c0618a12",
+      "hardware": "MICOAIR_H743",
+      "duration_s": 9.89,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 4,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "GPS-EPH",
+        "GPS-FIXLOSS",
+        "GPS-SATS",
+        "INT-NAN",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "c1c1b1b5-581b-41f1-9e4e-ada92e6096b7",
+      "label": "good",
+      "status": "skipped_size",
+      "size": 22314689
+    },
+    {
+      "log_id": "6326cfee-2d8e-42bb-ac67-df21f339af76",
+      "label": "crash_sw_hw",
+      "size": 1815016,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.05,
+      "fw_commit": "2e8918da66af",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 86.77,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-FAULT",
+        "EKF-MAGNETOMETER",
+        "EKF-VELOCITY"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "11a0d822-fa07-4d15-9016-87f0d84544bc",
+      "label": "unlabeled",
+      "size": 478748,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.03,
+      "fw_commit": "f573dec0d969",
+      "hardware": "MICOAIR_H743_V2",
+      "duration_s": 9.06,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "GPS-JAM"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "4409c13e-e035-4f49-ae6a-5e0c1ad3af50",
+      "label": "crash_sw_hw",
+      "size": 1110375,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.04,
+      "fw_commit": "9fcbf18d82b8",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 39.25,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "warning": 4
+      },
+      "finding_codes": [
+        "BAT-SAG",
+        "CONF-ALT-BARO-GPS",
+        "EKF-MAGNETOMETER",
+        "EKF-VELOCITY",
+        "INT-NODISARM"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "672033e4-f848-44e0-91a6-ea5e14afda86",
+      "label": "good",
+      "size": 17391633,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.35,
+      "fw_commit": "6c1566636852",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 399.43,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1
+      },
+      "finding_codes": [
+        "PROC-MODE-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "fb1e8c0d-b981-48ee-b618-e9f6340a31f5",
+      "label": "crash_sw_hw",
+      "size": 1783172,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.06,
+      "fw_commit": "f13bbacd5277",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 42.99,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 2,
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "BAT-LOW",
+        "EKF-HEIGHT",
+        "EKF-MAGNETOMETER",
+        "INT-COVERAGE",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "de300470-5e0d-4ee2-a132-903a2c2c7e44",
+      "label": "unlabeled",
+      "size": 1805353,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.05,
+      "fw_commit": "99c40407ffd7",
+      "hardware": "ARK_FMU_V6X",
+      "duration_s": 36.45,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 4,
+        "info": 1
+      },
+      "finding_codes": [
+        "EKF-HEIGHT",
+        "INT-COVERAGE",
+        "INT-NAN",
+        "PROC-GPS-1",
+        "VIB-HIGH"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false
+    },
+    {
+      "log_id": "0ba7eb19-1476-4152-acb2-b595a6311276",
+      "label": "unlabeled",
+      "size": 1713662,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.05,
+      "fw_commit": "6ea3539157ca",
+      "hardware": "MICOAIR_H743_V2",
+      "duration_s": 38.0,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 4,
+        "warning": 2
+      },
+      "finding_codes": [
+        "GPS-EPH",
+        "GPS-FIXLOSS",
+        "GPS-JAM",
+        "GPS-SATS",
+        "INT-NAN",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false
+    },
+    {
+      "log_id": "fc884e3c-46a6-4776-9a87-e157546f80fb",
+      "label": "crash_pilot",
+      "size": 324995,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.01,
+      "fw_commit": "4817c0618a12",
+      "hardware": "MICOAIR_H743",
+      "duration_s": 7.99,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 4,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "GPS-EPH",
+        "GPS-FIXLOSS",
+        "GPS-SATS",
+        "INT-NAN",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "e9324ab3-76e4-48fd-84d7-aba257b9efc5",
+      "label": "good",
+      "size": 16896645,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.38,
+      "fw_commit": "e63f9d9bf625",
+      "hardware": "PX4FMU_V4PRO",
+      "duration_s": 395.5,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {},
+      "finding_codes": [],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "45f0c4d6-b43c-46ee-91ba-952a150a86e7",
+      "label": "crash_sw_hw",
+      "size": 1815016,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.05,
+      "fw_commit": "2e8918da66af",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 86.77,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-FAULT",
+        "EKF-MAGNETOMETER",
+        "EKF-VELOCITY"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "c9447ae9-9896-4110-9927-2383da9c7be4",
+      "label": "good",
+      "size": 16867460,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.35,
+      "fw_commit": "fc30f880c837",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 388.02,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {},
+      "finding_codes": [],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "983facdb-2c16-45ba-ba6b-cc3b60ec5255",
+      "label": "crash_sw_hw",
+      "size": 7504216,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.16,
+      "fw_commit": "3098c77c9168",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 179.48,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "INT-COVERAGE",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "acaed4ff-8068-4b49-ad3e-22d94caf13c2",
+      "label": "unlabeled",
+      "size": 12575191,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.33,
+      "fw_commit": "4817c0618a12",
+      "hardware": "CUAV_X7PRO",
+      "duration_s": 89.43,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 3,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "BAT-LOW",
+        "CONF-ALT-AGREE",
+        "EKF-FAULT",
+        "INT-NAN",
+        "PROC-BAT-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "b085f140-b676-4f26-a53f-ceb59bc88a9b",
+      "label": "crash_sw_hw",
+      "size": 984248,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.03,
+      "fw_commit": "ea48cd497097",
+      "hardware": "PX4_FMU_V3",
+      "duration_s": 25.37,
+      "abstained": false,
+      "ends_in_flight": true,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "INT-TRUNC"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "df3dbefc-5207-4278-9d10-f840343efce3",
+      "label": "good",
+      "size": 9698877,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.26,
+      "fw_commit": "c17c54b61b4e",
+      "hardware": "PX4_FMU_V4",
+      "duration_s": 276.63,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "e3ea6e75-ea51-4a46-9a66-9cb44f10f8c5",
+      "label": "unlabeled",
+      "size": 19548317,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.45,
+      "fw_commit": "968732477803",
+      "hardware": "MRO_PIXRACERPRO",
+      "duration_s": 169.42,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 4,
+        "warning": 2
+      },
+      "finding_codes": [
+        "CONF-ALT-BARO-EKF",
+        "CONF-ALT-BARO-GPS",
+        "EKF-FAULT",
+        "INT-NAN",
+        "PROC-SPD-1",
+        "VIB-HIGH"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "d4374d67-dd03-4c6f-8fad-41309f212dd7",
+      "label": "crash_sw_hw",
+      "size": 3752259,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.08,
+      "fw_commit": "1682fd567142",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 88.79,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 4,
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "EKF-FAULT",
+        "EKF-HORIZONTAL",
+        "EKF-MAGNETOMETER",
+        "INT-COVERAGE",
+        "INT-NAN",
+        "PROC-GPS-1",
+        "PROC-MODE-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false
+    },
+    {
+      "log_id": "353f94e6-d84e-4889-bc1f-5a2b79b56915",
+      "label": "unlabeled",
+      "size": 6853254,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.12,
+      "fw_commit": "d5103d71b90d",
+      "hardware": "PX4_SITL",
+      "duration_s": 26.16,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "INT-NAN"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "d42940ac-0f34-41b6-89f1-e30f4f7a8692",
+      "label": "good",
+      "size": 14264320,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.35,
+      "fw_commit": "e91db7b4d269",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 332.66,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "ff719373-c47e-4649-9f74-6f6bf800f9db",
+      "label": "unlabeled",
+      "size": 1203909,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.04,
+      "fw_commit": "94cb2012792b",
+      "hardware": "CUBEPILOT_CUBEORANGEPLUS",
+      "duration_s": 28.23,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "GPS-EPH",
+        "INT-NAN"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "c1e9cf08-8ef6-4406-8aa7-e459df1a3156",
+      "label": "crash_sw_hw",
+      "status": "skipped_size",
+      "size": 29115721
+    },
+    {
+      "log_id": "c4d14ad9-f06b-4741-9672-2bdc93add72b",
+      "label": "unlabeled",
+      "size": 12385740,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.29,
+      "fw_commit": "1c8ab2a0d7db",
+      "hardware": "PX4_FMU_V6C",
+      "duration_s": 95.02,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 2,
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-FAULT",
+        "EKF-VELOCITY",
+        "PROC-SPD-1",
+        "VIB-HIGH"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "1240ce3f-aa5e-4afd-b2b6-131ea07c5aeb",
+      "label": "good",
+      "status": "skipped_size",
+      "size": 26063417
+    },
+    {
+      "log_id": "047ef43d-5c31-4a29-8959-bc7bb5147d3e",
+      "label": "crash_sw_hw",
+      "size": 9391129,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.17,
+      "fw_commit": "689db41c57b5",
+      "hardware": "PX4_SITL",
+      "duration_s": 37.46,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 4,
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-HORIZONTAL",
+        "EKF-VELOCITY",
+        "INT-NAN",
+        "INT-NODISARM",
+        "PROC-DIST-1",
+        "PROC-SPD-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "3b2e39bc-34ef-4278-a7f6-12cc0341caf2",
+      "label": "unlabeled",
+      "size": 3690364,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.09,
+      "fw_commit": "b8c541dd7277",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 79.25,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 5,
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE",
+        "EKF-MAGNETOMETER",
+        "GPS-EPH",
+        "GPS-FIXLOSS",
+        "GPS-SATS",
+        "INT-NAN",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true
+    },
+    {
+      "log_id": "2ce2bdcb-479e-4b7f-b64d-c13b841e9bd5",
+      "label": "good",
+      "size": 20633828,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.46,
+      "fw_commit": "e63f9d9bf625",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 464.33,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1
+      },
+      "finding_codes": [
+        "EKF-MAGNETOMETER"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "63cb8e3d-908b-44d6-9dce-3769893afaf4",
+      "label": "crash_sw_hw",
+      "size": 794134,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.02,
+      "fw_commit": "106905871d37",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 13.95,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 2,
+        "info": 1
+      },
+      "finding_codes": [
+        "EKF-HORIZONTAL",
+        "INT-COVERAGE",
+        "PROC-GPS-1"
+      ],
+      "conformance_evaluable": 5,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "1b1a5195-cbd4-4579-8d91-6cc24ebae700",
+      "label": "good",
+      "size": 10130727,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.28,
+      "fw_commit": "d3f5c06ba761",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 273.97,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "5cfa8d00-a6f2-43fd-ac57-2a746b88af0d",
+      "label": "good",
+      "size": 16105274,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.35,
+      "fw_commit": "e63f9d9bf625",
+      "hardware": "PX4FMU_V4PRO",
+      "duration_s": 376.25,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "critical": 1
+      },
+      "finding_codes": [
+        "BAT-LOW"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": false,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "677e014f-d91e-4ef6-86dd-63a4dfa5d23f",
+      "label": "good",
+      "size": 2788260,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.08,
+      "fw_commit": "66300876542d",
+      "hardware": "PX4_FMU_V5",
+      "duration_s": 72.57,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "warning": 1,
+        "info": 1
+      },
+      "finding_codes": [
+        "BAT-LOW",
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "c2ac645f-190a-4f38-82db-44c246128179",
+      "label": "great",
+      "size": 11870832,
+      "status": "processed",
+      "ok": true,
+      "process_s": 0.33,
+      "fw_commit": "96443b3cf3e3",
+      "hardware": "PX4FMU_V2",
+      "duration_s": 307.18,
+      "abstained": false,
+      "ends_in_flight": false,
+      "file_corruption": false,
+      "findings_by_severity": {
+        "info": 1
+      },
+      "finding_codes": [
+        "CONF-ALT-AGREE"
+      ],
+      "conformance_evaluable": 6,
+      "conformance_total": 6,
+      "conflict_checked": true,
+      "round2_reprocessed": true
+    },
+    {
+      "log_id": "184e55bd-ef88-46b2-a306-9217bd7e513e",
+      "label": "good",
+      "status": "skipped_size",
+      "size": 24505730
+    }
+  ]
+}

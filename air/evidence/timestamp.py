@@ -20,9 +20,10 @@ def request_timestamp(data: bytes, timeout_s: float = 10.0) -> dict:
     """Returns {"status": "ok", "tsr_der_b64": ...} or {"status": "unavailable", ...}."""
     digest = hashlib.sha256(data).digest()
     try:
-        from rfc3161_client import TimestampRequestBuilder, decode_timestamp_response
         import base64
+
         import httpx
+        from rfc3161_client import TimestampRequestBuilder, decode_timestamp_response
 
         req = TimestampRequestBuilder().data(data).build()
         resp = httpx.post(
@@ -42,7 +43,7 @@ def request_timestamp(data: bytes, timeout_s: float = 10.0) -> dict:
             "note": "RFC 3161 token from FreeTSA (development TSA); production should use a "
                     "contracted TSA/QTSP with archived certificate chain.",
         }
-    except Exception as e:  # noqa: BLE001 — any failure degrades to honest 'unavailable'
+    except Exception as e:
         return {
             "status": "unavailable",
             "tsa": FREETSA_URL,

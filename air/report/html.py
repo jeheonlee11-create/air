@@ -12,8 +12,9 @@ status palette and always carry a text label, never color alone.
 from __future__ import annotations
 
 import html as html_mod
+import math
 
-from ..schema import Finding, Incident, SEVERITY_ORDER, Series
+from ..schema import SEVERITY_ORDER, Finding, Incident, Series
 
 # --- reference palette (light mode) ---
 SURFACE = "#fcfcfb"
@@ -74,7 +75,7 @@ def svg_chart(inc: Incident, series_defs: list[tuple[Series, str]], title: str,
     y_min, y_max = float("inf"), float("-inf")
     for s, label in series_defs:
         t, v = _downsample(s.t_us, s.values)
-        pts = [(ts, val) for ts, val in zip(t, v) if val == val]  # drop NaN
+        pts = [(ts, val) for ts, val in zip(t, v, strict=False) if not math.isnan(val)]
         if not pts:
             continue
         data.append((label, pts))

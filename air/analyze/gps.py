@@ -110,7 +110,7 @@ def analyze(inc: Incident) -> list[Finding]:
     fix = inc.series_or_none("gps_fix")
     if fix is not None:
         t, v = clip_series(fix, t0, t1)
-        lost = [(ts, val) for ts, val in zip(t, v) if val < 3]
+        lost = [(ts, val) for ts, val in zip(t, v, strict=False) if val < 3]
         if lost:
             frac = len(lost) / max(1, len(v))
             findings.append(Finding(

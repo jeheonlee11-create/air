@@ -13,9 +13,9 @@ from __future__ import annotations
 
 import json
 
+from ..ingest.ulog import NAV_STATE
 from ..schema import Finding, Incident, SourceFile
 from .base import clip_series, extreme, flight_window
-from ..ingest.ulog import NAV_STATE
 
 
 def _metric(inc: Incident, name: str, t0: int, t1: int):

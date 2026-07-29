@@ -65,6 +65,8 @@ def _series(inc: Incident, name: str, topic, field_names, units="", scale=1.0, t
 def ingest_ulog(path: str) -> Incident:
     u = ULog(path)
     src = SourceFile.from_path(path, kind="px4_ulog", meta={"topics": len(u.data_list)})
+    if not u.data_list:
+        raise ValueError("ULog header parsed but the file contains no data topics")
 
     inc = Incident(
         incident_id=str(uuid.uuid4()),
@@ -112,7 +114,7 @@ def ingest_ulog(path: str) -> Incident:
             fix = inc.series_or_none("gps_fix")
             idx = 0
             if fix:  # first sample with a 3D fix
-                for i, v in enumerate(gps.data[lat_f]):
+                for i, _v in enumerate(gps.data[lat_f]):
                     fx = fix.at_or_before(int(gps.data["timestamp"][i]))
                     if fx is not None and fx >= 3:
                         idx = i
@@ -144,13 +146,13 @@ def ingest_ulog(path: str) -> Incident:
         _series(inc, "alt_local_m", lp, ["z"], "m AGL(rel)", scale=-1.0, topic_label="vehicle_local_position")
         if "x" in lp.data and "y" in lp.data:
             t = lp.data["timestamp"]
-            dist = [math.hypot(float(x), float(y)) for x, y in zip(lp.data["x"], lp.data["y"])]
+            dist = [math.hypot(float(x), float(y)) for x, y in zip(lp.data["x"], lp.data["y"], strict=False)]
             inc.series["dist_home_m"] = Series(
                 "dist_home_m", "px4_ulog:vehicle_local_position.x/y (horizontal, NED origin)",
                 [int(x) for x in t], dist, "m")
         if "vx" in lp.data and "vy" in lp.data:
             t = lp.data["timestamp"]
-            spd = [math.hypot(float(x), float(y)) for x, y in zip(lp.data["vx"], lp.data["vy"])]
+            spd = [math.hypot(float(x), float(y)) for x, y in zip(lp.data["vx"], lp.data["vy"], strict=False)]
             inc.series["groundspeed_ms"] = Series(
                 "groundspeed_ms", "px4_ulog:vehicle_local_position.vx/vy", [int(x) for x in t], spd, "m/s")
 
@@ -189,13 +191,19 @@ def ingest_ulog(path: str) -> Incident:
         t = att.data["timestamp"]
         q0, q1, q2, q3 = (att.data[f"q[{i}]"] for i in range(4))
         roll, pitch = [], []
-        for a, b, c, d in zip(q0, q1, q2, q3):
+        for a, b, c, d in zip(q0, q1, q2, q3, strict=False):
             roll.append(math.degrees(math.atan2(2 * (a * b + c * d), 1 - 2 * (b * b + c * c))))
             sp = max(-1.0, min(1.0, 2 * (a * c - d * b)))
             pitch.append(math.degrees(math.asin(sp)))
         ts = [int(x) for x in t]
         inc.series["roll_deg"] = Series("roll_deg", "px4_ulog:vehicle_attitude.q", ts, roll, "deg")
         inc.series["pitch_deg"] = Series("pitch_deg", "px4_ulog:vehicle_attitude.q", ts, pitch, "deg")
+
+    # ---- File integrity flag from the parser itself ----
+    if getattr(u, "file_corruption", False):
+        inc.notes.append(
+            "FILE CORRUPTION: the ULog parser reported corruption in this file; "
+            "some messages were unreadable and the timeline may be incomplete.")
 
     # ---- Discrete events ----
     _extract_events(u, inc)
@@ -226,17 +234,38 @@ def _initial(topic, field: str):
 
 def _extract_events(u: ULog, inc: Incident) -> None:
     # Arming — logs commonly start with the vehicle already armed (logging
-    # starts on arm), so the initial state counts as an event too.
+    # starts on arm), so the initial state counts as an event too. Older
+    # firmware does not log the `actuator_armed` topic at all; arming state
+    # then lives in `vehicle_status.arming_state` (1=standby, 2=armed).
     armed = _topic(u, "actuator_armed")
+    got_arming = False
     init = _initial(armed, "armed")
     if init and init[1]:
+        got_arming = True
         inc.add_event(TimelineEvent(
             init[0], "px4_ulog:actuator_armed.armed", "arming", "info",
             "Vehicle ARMED (armed at log start)"))
-    for t, old, new in _transitions(armed, "armed"):
+    for t, _old, new in _transitions(armed, "armed"):
+        got_arming = True
         inc.add_event(TimelineEvent(
             t, "px4_ulog:actuator_armed.armed", "arming", "info",
             "Vehicle ARMED" if new else "Vehicle DISARMED"))
+    if not got_arming:
+        vs_arm = _topic(u, "vehicle_status")
+        init = _initial(vs_arm, "arming_state")
+        if init is not None and init[1] == 2:
+            inc.add_event(TimelineEvent(
+                init[0], "px4_ulog:vehicle_status.arming_state", "arming", "info",
+                "Vehicle ARMED (armed at log start)"))
+        for t, old, new in _transitions(vs_arm, "arming_state"):
+            if new == 2:
+                inc.add_event(TimelineEvent(
+                    t, "px4_ulog:vehicle_status.arming_state", "arming", "info",
+                    "Vehicle ARMED"))
+            elif old == 2:
+                inc.add_event(TimelineEvent(
+                    t, "px4_ulog:vehicle_status.arming_state", "arming", "info",
+                    "Vehicle DISARMED"))
 
     # Flight mode changes
     vs = _topic(u, "vehicle_status")
@@ -251,7 +280,7 @@ def _extract_events(u: ULog, inc: Incident) -> None:
             t, "px4_ulog:vehicle_status.nav_state", "mode_change", "info",
             f"Mode: {NAV_STATE.get(old, f'NAV_STATE_{old}')} -> {NAV_STATE.get(new, f'NAV_STATE_{new}')}",
             {"old": old, "new": new}))
-    for t, old, new in _transitions(vs, "failsafe"):
+    for t, _old, new in _transitions(vs, "failsafe"):
         if new:
             inc.add_event(TimelineEvent(
                 t, "px4_ulog:vehicle_status.failsafe", "failsafe", "critical", "FAILSAFE activated"))
@@ -261,7 +290,7 @@ def _extract_events(u: ULog, inc: Incident) -> None:
 
     # Takeoff / landing
     land = _topic(u, "vehicle_land_detected")
-    for t, old, new in _transitions(land, "landed"):
+    for t, _old, new in _transitions(land, "landed"):
         inc.add_event(TimelineEvent(
             t, "px4_ulog:vehicle_land_detected.landed", "flight_phase", "info",
             "Landing detected" if new else "Takeoff detected"))
@@ -271,7 +300,7 @@ def _extract_events(u: ULog, inc: Incident) -> None:
     if fd is not None:
         for f in ("fd_roll", "fd_pitch", "fd_alt", "fd_ext", "fd_arm_escs", "fd_battery",
                   "fd_imbalanced_prop", "fd_motor"):
-            for t, old, new in _transitions(fd, f):
+            for t, _old, new in _transitions(fd, f):
                 if new:
                     inc.add_event(TimelineEvent(
                         t, f"px4_ulog:failure_detector_status.{f}", "failure_detector", "critical",

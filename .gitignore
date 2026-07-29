@@ -5,3 +5,8 @@ fixtures/*.ulg
 fixtures/dbinfo.json
 __pycache__/
 *.pyc
+.DS_Store
+demo/demo_runs/
+eval/run.log
+eval/rerun.log
+*.zip

@@ -27,7 +27,7 @@ class SourceFile:
     meta: dict = field(default_factory=dict)
 
     @classmethod
-    def from_path(cls, path: str, kind: str, meta: dict | None = None) -> "SourceFile":
+    def from_path(cls, path: str, kind: str, meta: dict | None = None) -> SourceFile:
         h = hashlib.sha256()
         size = 0
         with open(path, "rb") as f:

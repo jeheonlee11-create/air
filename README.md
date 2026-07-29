@@ -15,7 +15,7 @@ threshold cites its basis.
 
 ```bash
 python3 -m venv .venv
-./.venv/bin/pip install pyulog pymavlink cryptography httpx astral rfc3161-client
+./.venv/bin/pip install pyulog pymavlink cryptography httpx astral rfc3161-client flask
 
 # investigate a PX4 log against an ops-manual ruleset
 ./.venv/bin/python -m air.cli investigate fixtures/<log>.ulg \
@@ -24,6 +24,30 @@ python3 -m venv .venv
 # output: bundles/<log>/report.html  report.json  manifest.json  verify.py
 cd bundles/<log> && python3 verify.py    # offline integrity verification
 ```
+
+## Web demo (local-first)
+
+```bash
+# one-time: fetch the public sample crash log (20 MB)
+curl -L -o fixtures/75957ba9-f979-430d-a49c-8ef6e5ceec12.ulg \
+  https://cdn.logs.px4.io/75957ba9-f979-430d-a49c-8ef6e5ceec12.ulg
+
+./.venv/bin/python demo/app.py     # → http://127.0.0.1:8420
+```
+
+Upload a `.ulg` (or click "Run the sample crash instead"), get the incident
+record, download the signed bundle, verify it offline. Binds to localhost only;
+no data leaves the machine (the RFC 3161 timestamp is opt-in and sends a
+32-byte hash only). Demo walkthrough and scripts: [DEMO.md](DEMO.md).
+
+## Evaluation
+
+Reproducible harness against a seeded 120-log sample of the public PX4 corpus
+(fixtures excluded; pre-registered metrics): 99% ingestion, 0 uncaught pipeline
+errors, deterministic reruns 10/10, tamper detection 5/5, and a
+zero-false-positive (low-recall) ends-in-flight signal vs uploader labels.
+Full numbers, both evaluation rounds, and all caveats: [eval/EVALUATION.md](eval/EVALUATION.md).
+Product audit (formats, thresholds, failure behavior, crypto scope): [AUDIT.md](AUDIT.md).
 
 ## What's implemented (v0.1)
 
@@ -37,8 +61,10 @@ cd bundles/<log> && python3 verify.py    # offline integrity verification
 | Evidence bundle: canonical JSON record, RFC 9162 Merkle tree (0x00/0x01 domain separation), Ed25519 signature, RFC 3161 timestamp (FreeTSA), standalone `verify.py` (stdlib + cryptography only) | working, tamper-test verified |
 | Self-contained HTML incident record (charts per dataviz reference palette) | working |
 
-Validated against real labeled crash logs from the public PX4 corpus
-(436,637 logs, 589 human-labeled crashes at review.px4.io — free ground truth).
+Tested on real logs from the public PX4 Flight Review corpus (index of
+436,637 logs; our evaluation processed a seeded 100-log sample — see
+eval/EVALUATION.md for exactly what was and was not measured). Corpus labels
+are uploader-assigned and noisy, not verified ground truth.
 
 ## Roadmap (v0.2+)
 

@@ -69,7 +69,7 @@ def analyze(inc: Incident) -> list[Finding]:
     faults = inc.series_or_none("ekf_filter_faults")
     if faults is not None:
         t, v = clip_series(faults, t0, t1)
-        hit = next(((ts, val) for ts, val in zip(t, v) if val != 0), None)
+        hit = next(((ts, val) for ts, val in zip(t, v, strict=False) if val != 0), None)
         if hit:
             findings.append(Finding(
                 code="EKF-FAULT",

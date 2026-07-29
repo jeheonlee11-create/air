@@ -27,7 +27,7 @@ def flight_window(inc: Incident) -> tuple[int, int] | None:
 
 def clip_series(s: Series, t0: int, t1: int) -> tuple[list[int], list[float]]:
     t, v = [], []
-    for ts, val in zip(s.t_us, s.values):
+    for ts, val in zip(s.t_us, s.values, strict=False):
         if t0 <= ts <= t1:
             t.append(ts)
             v.append(val)

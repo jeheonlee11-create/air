@@ -23,7 +23,7 @@ def analyze(inc: Incident) -> list[Finding]:
     # --- Ends-while-armed / brownout / power loss ---
     win = flight_window(inc)
     if win is not None:
-        armed_t, end_t = win
+        armed_t, _end_t = win
         still_armed_at_end = True
         for ev in inc.sorted_events():
             if ev.kind == "arming" and "DISARMED" in ev.message and ev.t_us >= armed_t:
@@ -89,14 +89,24 @@ def analyze(inc: Incident) -> list[Finding]:
             threshold={"basis": "ArduPilot LogAnalyzer TestNaN, Copter-4.5.0"},
         ))
 
-    # --- Ingest caveats surface as info findings so they're never silent ---
+    # --- Ingest caveats surface as findings so they're never silent ---
     for note in inc.notes:
-        findings.append(Finding(
-            code="INT-COVERAGE",
-            title="Evidence coverage gap",
-            severity="info",
-            kind="integrity",
-            summary=note,
-        ))
+        if note.startswith("FILE CORRUPTION"):
+            findings.append(Finding(
+                code="INT-CORRUPT",
+                title="Log file corruption reported by parser",
+                severity="warning",
+                kind="integrity",
+                summary=note,
+                threshold={"basis": "pyulog ULog.file_corruption flag"},
+            ))
+        else:
+            findings.append(Finding(
+                code="INT-COVERAGE",
+                title="Evidence coverage gap",
+                severity="info",
+                kind="integrity",
+                summary=note,
+            ))
 
     return findings
