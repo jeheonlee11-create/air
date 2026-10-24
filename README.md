@@ -22,8 +22,16 @@ python3 -m venv .venv
     --procedures procedures/sample_ops_manual.json
 
 # output: bundles/<log>/report.html  report.json  manifest.json  verify.py
-cd bundles/<log> && python3 verify.py    # offline integrity verification
+# the CLI prints the signing key's sha256 fingerprint — publish it out of band
+cd bundles/<log> && python3 verify.py --fingerprint <published fingerprint>
 ```
+
+`verify.py` runs offline. The public key inside the bundle is not a trust
+anchor (anyone can re-sign an edited record), so without `--fingerprint` or
+`--trusted-key keys/air_signing_key.pub.pem` it reports "integrity OK, signer
+NOT verified" and exits 3. `--tsa-ca <pem>` additionally validates the RFC 3161
+TSA certificate chain (via `openssl ts -verify`); otherwise the token's imprint
+and CMS signature are checked but the chain is not.
 
 ## Web demo (local-first)
 

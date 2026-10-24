@@ -40,13 +40,14 @@ def test_crash_log_end_to_end(tmp_path):
 def test_bundle_verifies_and_detects_tamper(tmp_path):
     out = str(tmp_path / "bundle")
     investigate_log(CRASH_LOG, PROCEDURES, out, str(tmp_path / "k"), with_timestamp=False)
-    v = subprocess.run([sys.executable, "verify.py"], cwd=out, capture_output=True)
+    trusted = ["--trusted-key", str(tmp_path / "k" / "air_signing_key.pub.pem")]
+    v = subprocess.run([sys.executable, "verify.py", *trusted], cwd=out, capture_output=True)
     assert v.returncode == 0, v.stdout
     rp = os.path.join(out, "report.json")
     data = bytearray(open(rp, "rb").read())
     data[len(data) // 2] ^= 0x01
     open(rp, "wb").write(bytes(data))
-    v2 = subprocess.run([sys.executable, "verify.py"], cwd=out, capture_output=True)
+    v2 = subprocess.run([sys.executable, "verify.py", *trusted], cwd=out, capture_output=True)
     assert v2.returncode == 1
 
 

@@ -11,7 +11,12 @@ offline (FRE 902(11) requires making the record available for inspection):
       sources/             (referenced by hash; raw logs stay with the operator)
 
 The signature covers the Merkle root; the Merkle tree covers report.json and
-every source file hash. Change any byte anywhere and verification fails.
+every source file hash. Change any committed byte and the root no longer
+matches the signature. Because the signer's public key travels inside the
+bundle, a forger could rebuild and re-sign it with a key of their own; that is
+caught only when verify.py is given the operator's published key fingerprint
+(--fingerprint) or public key (--trusted-key). Without one it reports
+"integrity OK, signer NOT verified".
 """
 
 from __future__ import annotations
@@ -66,7 +71,8 @@ def build_bundle(report: dict, out_dir: str, key_dir: str,
             "public_key_pem": public_pem(key),
         },
         "rfc3161_timestamp": request_timestamp(root) if with_timestamp else {"status": "skipped"},
-        "verification": "run: python3 verify.py  (from inside this bundle directory)",
+        "verification": "run: python3 verify.py --fingerprint <operator's published key "
+                        "fingerprint>  (from inside this bundle directory)",
     }
     with open(os.path.join(out_dir, "manifest.json"), "w") as f:
         json.dump(manifest, f, indent=2)

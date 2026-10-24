@@ -62,6 +62,44 @@ def _series(inc: Incident, name: str, topic, field_names, units="", scale=1.0, t
     return s
 
 
+def _array_fields(data, base: str) -> list[str]:
+    """PX4 logs fixed-size array fields as `base[0]`, `base[1]`, ... in index order."""
+    out = []
+    while f"{base}[{len(out)}]" in data.data:
+        out.append(f"{base}[{len(out)}]")
+    return out
+
+
+def _combined_series(inc: Incident, name: str, topic, base: str, how: str, units="",
+                     topic_label=""):
+    """Collapse an array field (or a scalar of the same name) into one Series.
+
+    how="sum": per-axis counters -> total; how="max": per-instance metrics -> worst.
+    The provenance label names the elements combined and how.
+    """
+    if topic is None:
+        return None
+    fields = _array_fields(topic, base)
+    if fields:
+        cols = [[float(v) for v in topic.data[f]] for f in fields]
+        if how == "sum":
+            vals = [sum(row) for row in zip(*cols, strict=True)]
+            what = "sum across axes"
+        else:
+            vals = [max((v for v in row if not math.isnan(v)), default=math.nan)
+                    for row in zip(*cols, strict=True)]
+            what = "max across instances"
+        label = f"{base}[0..{len(fields) - 1}] ({what})"
+    elif base in topic.data:
+        vals, label = [float(v) for v in topic.data[base]], base
+    else:
+        return None
+    s = Series(name=name, source=f"px4_ulog:{topic_label or topic.name}.{label}",
+               t_us=[int(x) for x in topic.data["timestamp"]], values=vals, units=units)
+    inc.series[name] = s
+    return s
+
+
 def ingest_ulog(path: str) -> Incident:
     u = ULog(path)
     src = SourceFile.from_path(path, kind="px4_ulog", meta={"topics": len(u.data_list)})
@@ -164,26 +202,26 @@ def ingest_ulog(path: str) -> Incident:
 
     # ---- EKF health (estimator_status has *_test_ratio on all generations we target) ----
     est = _topic(u, "estimator_status")
-    for ratio in ("vel_test_ratio", "pos_test_ratio", "hgt_test_ratio", "mag_test_ratio", "hagl_test_ratio"):
+    for ratio in ("vel_test_ratio", "pos_test_ratio", "hgt_test_ratio", "hagl_test_ratio"):
         _series(inc, f"ekf_{ratio}", est, [ratio], "ratio", topic_label="estimator_status")
+    # heading innovation: `mag_test_ratio` on most firmware, `hdg_test_ratio` on some
+    _series(inc, "ekf_mag_test_ratio", est, ["mag_test_ratio", "hdg_test_ratio"], "ratio",
+            topic_label="estimator_status")
     _series(inc, "ekf_gps_check_fail", est, ["gps_check_fail_flags"], "bitmask", topic_label="estimator_status")
     _series(inc, "ekf_filter_faults", est, ["filter_fault_flags"], "bitmask", topic_label="estimator_status")
 
     # ---- Vibration / IMU consistency ----
     imu_status = _topic(u, "vehicle_imu_status")
     _series(inc, "vib_accel_ms2", imu_status, ["accel_vibration_metric"], "m/s^2", topic_label="vehicle_imu_status")
-    clip_f, _ = _first_field(imu_status, "accel_clipping") if imu_status else (None, None)
-    if imu_status is not None and clip_f:
-        t = imu_status.data["timestamp"]
-        vals = imu_status.data[clip_f]
-        inc.series["accel_clip_count"] = Series(
-            "accel_clip_count", f"px4_ulog:vehicle_imu_status.{clip_f}",
-            [int(x) for x in t], [float(v) for v in vals], "count")
+    # accel_clipping[0..2]: accumulated clip counts per axis -> total
+    _combined_series(inc, "accel_clip_count", imu_status, "accel_clipping", "sum", "count",
+                     topic_label="vehicle_imu_status")
+    # *_inconsistency[0..3]: per IMU instance vs. the mean -> worst instance
     ssi = _topic(u, "sensors_status_imu")
-    _series(inc, "imu_accel_inconsistency", ssi, ["accel_inconsistency_m_s_s"], "m/s^2",
-            topic_label="sensors_status_imu")
-    _series(inc, "imu_gyro_inconsistency", ssi, ["gyro_inconsistency_rad_s"], "rad/s",
-            topic_label="sensors_status_imu")
+    _combined_series(inc, "imu_accel_inconsistency", ssi, "accel_inconsistency_m_s_s", "max",
+                     "m/s^2", topic_label="sensors_status_imu")
+    _combined_series(inc, "imu_gyro_inconsistency", ssi, "gyro_inconsistency_rad_s", "max",
+                     "rad/s", topic_label="sensors_status_imu")
 
     # ---- Attitude ----
     att = _topic(u, "vehicle_attitude")

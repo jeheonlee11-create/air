@@ -37,6 +37,12 @@ from flask import (
 
 from air import __version__
 from air.api import UnsupportedLogError, investigate_log
+from air.evidence.signing import (
+    PUBLIC_KEY_FILE,
+    load_or_create_key,
+    public_key_fingerprint,
+    public_pem,
+)
 
 RUNS_DIR = os.path.join(REPO, "demo", "demo_runs")
 SAMPLE_LOG = os.path.join(REPO, "fixtures", "75957ba9-f979-430d-a49c-8ef6e5ceec12.ulg")
@@ -205,8 +211,9 @@ RESULT_HTML = """<!doctype html><html lang="en"><head><meta charset="utf-8">
   white-space:pre-wrap;max-height:260px;overflow:auto"></pre>
 <p class="note">The bundle contains <code>report.json</code> (the authoritative signed
 record), <code>report.html</code>, <code>manifest.json</code>, and <code>verify.py</code>.
-To verify independently: unzip, then run <code>python3 verify.py</code> in the bundle
-directory (requires Python 3.10+ and the <code>cryptography</code> package; no network
+To verify independently: unzip, then run <code>python3 verify.py --fingerprint
+{{ fingerprint }}</code> in the bundle directory (in real use, take the fingerprint from
+the operator, not from this page or the bundle) (requires Python 3.10+ and the <code>cryptography</code> package; no network
 access is needed or used).</p>
 
 <iframe src="/run/{{ run_id }}/report.html" title="Full incident record"></iframe>
@@ -318,12 +325,14 @@ def result(run_id: str):
     with open(os.path.join(d, "bundle", "manifest.json")) as f:
         manifest = json.load(f)
     ts_status = manifest.get("rfc3161_timestamp", {}).get("status", "absent")
+    # from the operator's own key, not from the bundle being verified
+    fingerprint = public_key_fingerprint(public_pem(load_or_create_key(os.path.join(REPO, "keys"))))
     return render_template_string(
         RESULT_HTML, css=BASE_CSS, run_id=run_id, short_id=run_id[:6],
         source_name=meta.get("source_name", "uploaded log"),
         duration=report["flight"]["duration_s"], created=report["created_utc"],
         abstained="INT-NOARM" in codes, n_crit=n_crit, n_warn=n_warn,
-        conf_line=conf_line, ts_status=ts_status)
+        conf_line=conf_line, ts_status=ts_status, fingerprint=fingerprint)
 
 
 @app.get("/run/<run_id>/report.html")
@@ -349,7 +358,11 @@ def bundle_zip(run_id: str):
 @app.post("/run/<run_id>/verify")
 def verify(run_id: str):
     d = _run_dir(run_id)
-    p = subprocess.run([sys.executable, "verify.py"],
+    # The demo server is the operator here, so it verifies against its own
+    # signing key (written by load_or_create_key) as the trust anchor.
+    load_or_create_key(os.path.join(REPO, "keys"))  # ensures the .pub.pem exists
+    pub = os.path.join(REPO, "keys", PUBLIC_KEY_FILE)
+    p = subprocess.run([sys.executable, "verify.py", "--trusted-key", pub],
                        cwd=os.path.join(d, "bundle"), capture_output=True, text=True,
                        timeout=60)
     return jsonify({"exit": p.returncode, "output": p.stdout + p.stderr})

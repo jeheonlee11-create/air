@@ -15,6 +15,7 @@ import sys
 
 from . import __version__
 from .api import UnsupportedLogError, investigate_log
+from .evidence.signing import public_key_fingerprint
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -55,6 +56,9 @@ def main(argv: list[str] | None = None) -> int:
     n_crit = sum(1 for f in findings if f.severity == "critical")
     print(f"\n  bundle: {out}")
     print(f"  merkle root: {manifest['merkle']['root_hex'][:32]}…")
+    fp = public_key_fingerprint(manifest["signature"]["public_key_pem"])
+    print(f"  signing key fingerprint (sha256): {fp}")
+    print("    publish this out of band; verifiers run: python3 verify.py --fingerprint <it>")
     print(f"  rfc3161: {manifest['rfc3161_timestamp'].get('status')}")
     print(f"  {n_crit} critical finding(s) — report.html / report.json written")
     return 0

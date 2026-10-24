@@ -14,6 +14,7 @@ from __future__ import annotations
 import html as html_mod
 import math
 
+from ..evidence.signing import public_key_fingerprint
 from ..schema import SEVERITY_ORDER, Finding, Incident, Series
 
 # --- reference palette (light mode) ---
@@ -31,6 +32,10 @@ STATUS_TEXT = {"critical": "#a02020", "warning": "#8a5a00", "info": "#52514e", "
 
 def esc(s) -> str:
     return html_mod.escape(str(s))
+
+
+def _key_fingerprint(manifest: dict) -> str:
+    return public_key_fingerprint(manifest["signature"]["public_key_pem"])
 
 
 def _downsample(t: list[int], v: list[float], n: int = 400):
@@ -308,9 +313,9 @@ def render_html(inc: Incident, findings: list[Finding], conformance: dict | None
     <tbody>{src_rows}</tbody></table>
   <div style="font-size:12px;color:{INK2};margin-top:10px;line-height:1.6">
     Merkle root (RFC 9162-SHA256): <span style="font-family:ui-monospace,monospace;font-size:10.5px;word-break:break-all">{esc(manifest['merkle']['root_hex'])}</span><br>
-    Record signature: Ed25519 over the Merkle root &middot; public key embedded in manifest.json<br>
+    Record signature: Ed25519 over the Merkle root &middot; public key embedded in manifest.json (fingerprint <span style="font-family:ui-monospace,monospace;font-size:10.5px;word-break:break-all">{esc(_key_fingerprint(manifest))}</span>; compare with the operator's published fingerprint)<br>
     Independent time attestation: {ts_line}<br>
-    To verify this record: <span style="font-family:ui-monospace,monospace">python3 verify.py</span> inside the bundle directory. Any altered byte in report.json or any source file causes verification to fail.
+    To verify this record: <span style="font-family:ui-monospace,monospace">python3 verify.py --fingerprint &lt;published fingerprint&gt;</span> inside the bundle directory. Any altered byte in report.json or any source file breaks the signature; a re-signed copy is caught by the fingerprint check.
   </div>
 
   <div style="margin-top:34px;padding-top:14px;border-top:1px solid {GRID};font-size:11px;color:{MUTED};line-height:1.6">

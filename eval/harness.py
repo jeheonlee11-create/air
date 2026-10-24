@@ -67,6 +67,7 @@ sys.path.insert(0, REPO)
 
 from air import __version__
 from air.api import UnsupportedLogError, investigate_log
+from air.evidence.signing import PUBLIC_KEY_FILE
 
 SEED = 42
 PER_LOG_CAP = 20 * 1024 * 1024          # 20 MB
@@ -239,14 +240,15 @@ def main() -> int:
     # --- verification + controlled tamper ---
     verification = []
     py = sys.executable
+    trusted = ["--trusted-key", os.path.join(REPO, "keys", PUBLIC_KEY_FILE)]
     for b in ver_bundles:
         lid = os.path.basename(b)[7:]
-        v1 = subprocess.run([py, "verify.py"], cwd=b, capture_output=True)
+        v1 = subprocess.run([py, "verify.py", *trusted], cwd=b, capture_output=True)
         rp = os.path.join(b, "report.json")
         data = bytearray(open(rp, "rb").read())
         data[len(data) // 2] ^= 0x01          # flip one bit mid-file
         open(rp, "wb").write(bytes(data))
-        v2 = subprocess.run([py, "verify.py"], cwd=b, capture_output=True)
+        v2 = subprocess.run([py, "verify.py", *trusted], cwd=b, capture_output=True)
         verification.append({"log_id": lid,
                              "clean_exit": v1.returncode, "tampered_exit": v2.returncode,
                              "clean_pass": v1.returncode == 0,

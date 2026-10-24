@@ -37,6 +37,8 @@ def request_timestamp(data: bytes, timeout_s: float = 10.0) -> dict:
         return {
             "status": "ok",
             "tsa": FREETSA_URL,
+            # informational only: verify.py checks the imprint inside the token
+            # itself (FreeTSA uses SHA-512), not this field
             "message_imprint_sha256": digest.hex(),
             "gen_time": str(tsr.tst_info.gen_time),
             "tsr_der_b64": base64.b64encode(resp.content).decode(),
