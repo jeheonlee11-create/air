@@ -1,15 +1,16 @@
 """Ed25519 signing over canonical JSON.
 
-Design constraints (from FRE 902(13)/(14) practice):
-- The signed artifact must be human-readable (JSON, not CBOR) so an adjuster
-  or opposing expert can open it in a text editor.
-- Numbers that matter are stringified before signing to avoid float-encoding
-  ambiguity across JSON implementations.
+- The signed record is human-readable JSON (sorted keys, compact separators,
+  UTF-8) so a reviewer can open it in a text editor and re-derive its bytes.
 - The public key ships inside the bundle for convenience, but it is not a
   trust anchor: anyone can re-sign an edited record with a fresh key. The
   operator publishes the key's SHA-256 fingerprint out of band and verifiers
   pass it to verify.py (--fingerprint / --trusted-key). Verification stays
-  offline (a hostile third party runs verify.py without contacting the vendor).
+  offline (a third party runs verify.py without contacting the vendor).
+- A matching fingerprint shows which key signed, not who controls it. AIR has
+  no PKI for signer identity. Its records are intended to support a qualified
+  person's certification of an electronic record (e.g. under Fed. R. Evid.
+  902(13)/(14)); AIR does not itself certify identity or admissibility.
 """
 
 from __future__ import annotations

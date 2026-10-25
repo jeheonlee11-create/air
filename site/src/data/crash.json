@@ -13,34 +13,42 @@
  },
  "conformance": {
   "failed": 2,
+  "marginal": 0,
   "not_evaluable": 0,
   "passed": 4,
   "procedures_name": "Sample Part 107 Operations Manual (demonstration ruleset)",
   "results": [
    {
-    "description": "Maximum altitude 120 m (400 ft) AGL",
+    "description": "Maximum height 120 m (400 ft) above the launch point (AGL over level terrain)",
     "evidence": {
-     "source": "px4_ulog:vehicle_local_position.z",
+     "estimator_vertical_uncertainty_m": 0.42,
+     "reference": "height above the home (launch) position: home_position.z minus vehicle_local_position.z. Equals height above ground only where the terrain is level with the launch point.",
+     "source": "px4_ulog:home_position.z - vehicle_local_position.z",
      "t_us": 732193105,
-     "value": 120.04
+     "value": 121.57
     },
     "id": "ALT-1",
     "limit": 120,
-    "observed": 120.04,
+    "observed": 121.57,
     "op": "<=",
+    "tolerance": 1.0,
+    "tolerance_basis": "AIR default measurement tolerance (order of PX4 EKF position/velocity uncertainty); override per rule with \"tolerance\"",
     "verdict": "FAIL"
    },
    {
     "description": "Maximum distance from launch point 500 m (VLOS)",
     "evidence": {
-     "source": "px4_ulog:vehicle_local_position.x/y (horizontal, NED origin)",
+     "reference": "horizontal distance from the home (launch) position",
+     "source": "px4_ulog:vehicle_local_position.x/y - home_position.x/y (horizontal)",
      "t_us": 204690041,
-     "value": 356.95
+     "value": 356.91
     },
     "id": "DIST-1",
     "limit": 500,
-    "observed": 356.95,
+    "observed": 356.91,
     "op": "<=",
+    "tolerance": 2.0,
+    "tolerance_basis": "AIR default measurement tolerance (order of PX4 EKF position/velocity uncertainty); override per rule with \"tolerance\"",
     "verdict": "PASS"
    },
    {
@@ -54,6 +62,8 @@
     "limit": 19,
     "observed": 17.88,
     "op": "<=",
+    "tolerance": 0.5,
+    "tolerance_basis": "AIR default measurement tolerance (order of PX4 EKF position/velocity uncertainty); override per rule with \"tolerance\"",
     "verdict": "PASS"
    },
    {
@@ -67,6 +77,8 @@
     "limit": 6,
     "observed": 20.0,
     "op": ">=",
+    "tolerance": 0.0,
+    "tolerance_basis": "none (exact limit)",
     "verdict": "PASS"
    },
    {
@@ -80,6 +92,8 @@
     "limit": 15,
     "observed": 0.0,
     "op": ">=",
+    "tolerance": 0.0,
+    "tolerance_basis": "none (exact limit)",
     "verdict": "FAIL"
    },
    {
@@ -263,22 +277,57 @@
    "title": "Battery depleted to 0% in flight"
   },
   {
+   "code": "BAT-SAG",
+   "evidence": [
+    {
+     "note": "baseline: highest voltage in the preceding 10 s",
+     "source": "px4_ulog:battery_status.voltage_filtered_v",
+     "t_us": 723097764,
+     "value": 26.01
+    },
+    {
+     "note": "voltage at worst sag (51% below baseline)",
+     "source": "px4_ulog:battery_status.voltage_filtered_v",
+     "t_us": 733087738,
+     "value": 12.76
+    },
+    {
+     "note": "battery current at worst sag",
+     "source": "px4_ulog:battery_status.current_filtered_a",
+     "t_us": 733087738,
+     "value": 31.6
+    }
+   ],
+   "kind": "anomaly",
+   "severity": "critical",
+   "summary": "Battery voltage fell from 26.0 V to 12.8 V within 10.0 s, reaching the low point at 11:15:27Z (T+587.8s) (51% below the recent baseline). Current was 39.7 A at the baseline sample and 31.6 A at the sag point. Normal discharge cannot explain a drop this fast; it indicates the pack could not hold voltage under load (high internal resistance, a failing or cold cell, overload, or a power-system fault), which can cut power before the remaining-capacity estimate reaches zero.",
+   "threshold": {
+    "basis": "heuristic: drop below the highest voltage in the preceding 10 s. Healthy LiPo packs typically sag well under 10% on a load step; 15%+ suggests high internal resistance, a failing cell, a cold pack or overload",
+    "fail_above": 0.3,
+    "metric": "voltage_sag_fraction_vs_rolling_max",
+    "warn_above": 0.15,
+    "window_s": 10.0
+   },
+   "title": "Voltage sag under load (51% within 10 s)"
+  },
+  {
    "code": "INT-TRUNC",
    "evidence": [
     {
-     "note": "final logged altitude while armed",
-     "source": "px4_ulog:vehicle_local_position.z",
+     "note": "final logged height (above home) while armed",
+     "source": "px4_ulog:home_position.z - vehicle_local_position.z",
      "t_us": 739893538,
-     "value": 12.64
+     "value": 14.17
     }
    ],
    "kind": "integrity",
    "severity": "critical",
-   "summary": "The log terminates while the vehicle is still armed at approximately 12.6 m altitude. Flight logs normally continue until disarm; an in-air truncation indicates sudden power loss, controller brownout, or destruction of the vehicle at the moment of impact. The final logged data point is at 11:15:34Z (T+594.6s).",
+   "summary": "The log terminates while the vehicle is still armed at approximately 14.2 m above home. Flight logs normally continue until disarm; an in-air truncation is consistent with sudden power loss, controller brownout, or destruction of the vehicle at impact. The final logged data point is at 11:15:34Z (T+594.6s).",
    "threshold": {
     "basis": "ArduPilot LogAnalyzer TestBrownout (finalAltMax=3.0 m), Copter-4.5.0",
     "fail_above": 3.0,
-    "metric": "final_altitude_m"
+    "metric": "final_height_m",
+    "reference": "above home"
    },
    "title": "Log ends in flight (possible power loss / brownout / impact)"
   },
@@ -286,21 +335,24 @@
    "code": "PROC-ALT-1",
    "evidence": [
     {
-     "source": "px4_ulog:vehicle_local_position.z",
+     "estimator_vertical_uncertainty_m": 0.42,
+     "reference": "height above the home (launch) position: home_position.z minus vehicle_local_position.z. Equals height above ground only where the terrain is level with the launch point.",
+     "source": "px4_ulog:home_position.z - vehicle_local_position.z",
      "t_us": 732193105,
-     "value": 120.04
+     "value": 121.57
     }
    ],
    "kind": "conformance",
    "severity": "critical",
-   "summary": "Rule ALT-1 ('Maximum altitude 120 m (400 ft) AGL') requires max_alt_agl_m <= 120; the flight recorded 120.04. See conformance table for the evidence sample.",
+   "summary": "Rule ALT-1 ('Maximum height 120 m (400 ft) above the launch point (AGL over level terrain)') requires max_alt_agl_m <= 120; the flight recorded 121.57, beyond the 1.0 measurement tolerance. See conformance table for the evidence sample. Reference: height above the home (launch) position: home_position.z minus vehicle_local_position.z. Equals height above ground only where the terrain is level with the launch point.",
    "threshold": {
     "basis": "Sample Part 107 Operations Manual (demonstration ruleset)",
     "limit": 120,
     "metric": "max_alt_agl_m",
-    "op": "<="
+    "op": "<=",
+    "tolerance": 1.0
    },
-   "title": "Procedure violated: Maximum altitude 120 m (400 ft) AGL"
+   "title": "Procedure violated: Maximum height 120 m (400 ft) above the launch point (AGL over level terrain)"
   },
   {
    "code": "PROC-BAT-1",
@@ -323,26 +375,6 @@
    "title": "Procedure violated: Land with at least 15% battery remaining"
   },
   {
-   "code": "BAT-SAG",
-   "evidence": [
-    {
-     "note": "minimum voltage; flight started at 31.30 V",
-     "source": "px4_ulog:battery_status.voltage_filtered_v",
-     "t_us": 733487739,
-     "value": 12.74
-    }
-   ],
-   "kind": "anomaly",
-   "severity": "warning",
-   "summary": "Battery voltage sagged from 31.3 V at flight start to 12.7 V at 11:15:28Z (T+588.2s) (59% drop). Sag of this magnitude under load indicates a degraded or cold battery, an overloaded aircraft, or a failing cell \u2014 all of which can cause sudden power loss before the remaining-capacity estimate reaches zero.",
-   "threshold": {
-    "basis": "LiPo sag heuristic",
-    "metric": "voltage_sag_fraction",
-    "warn_above": 0.25
-   },
-   "title": "Severe voltage sag (59% below flight-start voltage)"
-  },
-  {
    "code": "CONF-ALT-BARO-GPS",
    "evidence": [
     {
@@ -360,10 +392,11 @@
    ],
    "kind": "conflict",
    "severity": "warning",
-   "summary": "Two independent altitude sources disagree: after correcting for their initial reference offset (+20.4 m), barometric altitude and GPS altitude diverged by up to 20.3 m at 11:15:20Z (T+580.5s). One of these sources is wrong at that moment. Typical causes: barometer drift from airflow/temperature (baro wrong), GPS multipath or degraded constellation geometry (GPS wrong), or estimator divergence. Altitude-dependent conclusions near this time must state which source they rely on.",
+   "summary": "Two independent altitude sensors disagree. After correcting for their initial reference offset (+20.4 m), barometric altitude and GPS altitude diverged by up to 20.3 m at 11:15:20Z (T+580.5s). At least one of them is wrong at that moment. Typical causes: barometer error from airflow or temperature, GPS multipath or poor satellite geometry, or estimator divergence. Altitude-dependent conclusions near this time must state which source they rely on. 1 of 1190 comparison points were skipped because one source had no sample within 1.0 s (treated as a data gap, not compared).",
    "threshold": {
     "basis": "offset-corrected cross-source residual",
     "fail_above": 25.0,
+    "max_sample_age_s": 1.0,
     "metric": "altitude_divergence_m",
     "warn_above": 10.0
    },
@@ -395,7 +428,7 @@
   "duration_s": 594.71
  },
  "record": {
-  "merkle_root": "2dad81962328718c79affa8c3a575937eaa766c8aea95fe2e2f81be1feee4f75",
+  "merkle_root": "61c7e1c1633ef7dc91e8e12cf5f5902f30605655b81bb9c30cfc7305412bec72",
   "signature_algorithm": "Ed25519",
   "source_digests": [
    {
@@ -404,10 +437,10 @@
    },
    {
     "name": "sample_ops_manual.json",
-    "sha256": "f29e0240ad1bb97a90da567d331bf7c5a0e8e5acc238aefeb61dce44b3ea9179"
+    "sha256": "aec6aff216e3f2760fed12228d311aaae66074231006c98ce798c873e296f89a"
    }
   ],
-  "tree_size": 3
+  "tree_size": 4
  },
  "series": {
   "alt_baro_m": {
@@ -1378,7 +1411,7 @@
     ]
    ],
    "source": "px4_ulog:vehicle_air_data.baro_alt_meter",
-   "units": "m"
+   "units": "m (barometric)"
   },
   "alt_gps_m": {
    "points": [
@@ -3318,7 +3351,7 @@
     ]
    ],
    "source": "px4_ulog:vehicle_local_position.z",
-   "units": "m AGL(rel)"
+   "units": "m above EKF origin"
   },
   "batt_remaining": {
    "points": [
@@ -5251,216 +5284,216 @@
   "dist_home_m": {
    "points": [
     [
-     3.64,
-     0.88
+     1.13,
+     0.0
     ],
     [
      4.74,
-     1.09
+     0.62
     ],
     [
-     6.24,
-     1.29
+     6.33,
+     0.77
     ],
     [
-     9.14,
-     0.88
+     9.53,
+     0.21
     ],
     [
-     10.53,
-     1.02
+     9.84,
+     0.22
     ],
     [
-     12.24,
-     0.85
+     11.13,
+     0.08
     ],
     [
-     15.73,
-     1.07
+     18.83,
+     0.03
     ],
     [
-     19.33,
-     0.95
+     19.63,
+     0.64
     ],
     [
      19.73,
-     1.16
+     0.85
     ],
     [
      24.53,
-     35.6
+     35.54
     ],
     [
      24.64,
-     36.58
+     36.52
     ],
     [
      29.54,
-     82.76
+     82.71
     ],
     [
      29.64,
-     83.71
+     83.66
     ],
     [
      34.43,
-     130.46
+     130.41
     ],
     [
      34.53,
-     131.42
+     131.37
     ],
     [
      39.44,
-     180.1
+     180.05
     ],
     [
      39.54,
-     181.08
+     181.03
     ],
     [
      44.44,
-     229.76
+     229.71
     ],
     [
      44.53,
-     230.74
+     230.69
     ],
     [
      49.34,
-     278.26
+     278.21
     ],
     [
      49.43,
-     279.24
+     279.19
     ],
     [
      54.34,
-     327.93
+     327.88
     ],
     [
      54.44,
-     328.9
+     328.85
     ],
     [
      59.23,
-     356.92
+     356.87
     ],
     [
      59.43,
-     356.95
+     356.91
     ],
     [
      64.24,
-     332.35
+     332.31
     ],
     [
      64.33,
-     331.58
+     331.54
     ],
     [
      69.14,
-     306.34
+     306.31
     ],
     [
      69.33,
-     306.29
+     306.27
     ],
     [
      72.53,
-     307.94
-    ],
-    [
-     75.83,
-     307.55
-    ],
-    [
-     78.63,
-     307.84
-    ],
-    [
-     79.63,
-     307.78
-    ],
-    [
-     82.44,
-     307.9
-    ],
-    [
-     86.03,
-     307.98
-    ],
-    [
-     89.04,
-     307.76
-    ],
-    [
-     89.83,
-     307.68
-    ],
-    [
-     93.24,
-     307.97
-    ],
-    [
-     94.33,
-     307.96
-    ],
-    [
-     97.64,
-     307.9
-    ],
-    [
-     102.23,
-     307.86
-    ],
-    [
-     103.84,
-     307.93
-    ],
-    [
-     103.94,
-     307.94
-    ],
-    [
-     106.73,
-     308.26
-    ],
-    [
-     110.74,
-     308.22
-    ],
-    [
-     113.83,
-     308.08
-    ],
-    [
-     115.33,
-     308.07
-    ],
-    [
-     118.14,
      307.92
     ],
     [
+     75.83,
+     307.53
+    ],
+    [
+     78.63,
+     307.82
+    ],
+    [
+     79.63,
+     307.76
+    ],
+    [
+     84.04,
+     307.88
+    ],
+    [
+     86.03,
+     307.95
+    ],
+    [
+     89.04,
+     307.73
+    ],
+    [
+     89.83,
+     307.65
+    ],
+    [
+     93.24,
+     307.94
+    ],
+    [
+     94.33,
+     307.93
+    ],
+    [
+     97.64,
+     307.88
+    ],
+    [
+     102.23,
+     307.83
+    ],
+    [
+     103.84,
+     307.91
+    ],
+    [
+     103.94,
+     307.92
+    ],
+    [
+     106.73,
+     308.24
+    ],
+    [
+     110.74,
+     308.19
+    ],
+    [
+     113.83,
+     308.05
+    ],
+    [
+     115.33,
+     308.05
+    ],
+    [
+     118.14,
+     307.9
+    ],
+    [
      120.83,
-     308.02
+     308.0
     ],
     [
      123.73,
-     307.86
+     307.84
     ],
     [
      124.43,
-     307.78
+     307.76
     ],
     [
      128.43,
-     308.04
+     308.01
     ],
     [
      128.74,
-     308.0
+     307.98
     ],
     [
      133.64,
@@ -5468,11 +5501,11 @@
     ],
     [
      133.73,
-     289.67
+     289.66
     ],
     [
      138.53,
-     283.19
+     283.2
     ],
     [
      138.63,
@@ -5520,51 +5553,51 @@
     ],
     [
      168.34,
-     307.69
+     307.58
     ],
     [
      169.84,
-     308.63
+     308.51
     ],
     [
      173.23,
-     306.7
+     306.58
     ],
     [
      173.33,
-     306.61
+     306.48
     ],
     [
      178.23,
-     301.52
+     301.43
     ],
     [
      178.34,
-     301.34
+     301.24
     ],
     [
      183.14,
-     289.55
+     289.47
     ],
     [
      183.23,
-     289.52
+     289.45
     ],
     [
      188.13,
-     281.25
+     281.18
     ],
     [
      188.23,
-     280.86
+     280.8
     ],
     [
      193.14,
-     259.15
+     259.12
     ],
     [
      193.24,
-     258.71
+     258.68
     ],
     [
      198.03,
@@ -5576,11 +5609,11 @@
     ],
     [
      202.34,
-     237.17
+     237.18
     ],
     [
      205.34,
-     237.17
+     237.18
     ],
     [
      207.94,
@@ -5596,23 +5629,23 @@
     ],
     [
      213.03,
-     237.14
+     237.15
     ],
     [
      216.03,
-     237.29
+     237.3
     ],
     [
      217.94,
-     237.17
+     237.18
     ],
     [
-     221.54,
+     221.64,
      237.35
     ],
     [
      225.44,
-     237.32
+     237.33
     ],
     [
      227.53,
@@ -5620,7 +5653,7 @@
     ],
     [
      227.94,
-     237.17
+     237.18
     ],
     [
      229.44,
@@ -5632,7 +5665,7 @@
     ],
     [
      234.84,
-     237.34
+     237.35
     ],
     [
      237.94,
@@ -5640,7 +5673,7 @@
     ],
     [
      240.53,
-     237.13
+     237.14
     ],
     [
      245.33,
@@ -5648,7 +5681,7 @@
     ],
     [
      247.63,
-     237.31
+     237.32
     ],
     [
      251.33,
@@ -5680,7 +5713,7 @@
     ],
     [
      266.13,
-     237.33
+     237.34
     ],
     [
      269.13,
@@ -5688,7 +5721,7 @@
     ],
     [
      271.53,
-     237.18
+     237.19
     ],
     [
      272.53,
@@ -5708,11 +5741,11 @@
     ],
     [
      282.43,
-     237.2
+     237.21
     ],
     [
      287.23,
-     237.36
+     237.37
     ],
     [
      287.44,
@@ -5724,7 +5757,7 @@
     ],
     [
      292.53,
-     237.36
+     237.37
     ],
     [
      297.13,
@@ -5732,491 +5765,491 @@
     ],
     [
      297.23,
-     237.06
+     237.07
     ],
     [
      302.14,
-     213.93
+     213.94
     ],
     [
      302.24,
-     213.11
+     213.12
     ],
     [
      307.13,
-     204.36
+     204.35
     ],
     [
      307.23,
-     204.31
+     204.3
     ],
     [
      312.04,
-     200.33
+     200.3
     ],
     [
      312.13,
-     200.2
+     200.16
     ],
     [
      317.04,
-     193.68
+     193.63
     ],
     [
      318.13,
-     193.6
+     193.55
     ],
     [
      321.54,
-     193.76
+     193.7
     ],
     [
      323.94,
-     193.61
+     193.55
     ],
     [
      326.34,
-     193.74
+     193.68
     ],
     [
      330.33,
-     193.66
+     193.61
     ],
     [
      331.83,
-     193.84
+     193.78
     ],
     [
      332.73,
-     193.88
+     193.82
     ],
     [
      335.13,
-     193.7
+     193.64
     ],
     [
      340.53,
-     193.81
-    ],
-    [
-     341.84,
      193.75
     ],
     [
-     342.93,
+     341.84,
      193.7
     ],
     [
+     342.93,
+     193.65
+    ],
+    [
      344.94,
-     193.79
+     193.74
     ],
     [
      350.43,
-     193.64
+     193.59
     ],
     [
      351.74,
-     193.97
+     193.91
     ],
     [
      352.03,
-     194.0
-    ],
-    [
-     353.84,
-     193.64
-    ],
-    [
-     357.24,
-     193.87
-    ],
-    [
-     361.64,
-     193.58
-    ],
-    [
-     364.53,
-     193.63
-    ],
-    [
-     366.34,
-     193.48
-    ],
-    [
-     369.83,
-     193.44
-    ],
-    [
-     371.53,
-     193.64
-    ],
-    [
-     371.84,
-     193.66
-    ],
-    [
-     373.83,
-     193.52
-    ],
-    [
-     377.03,
-     193.63
-    ],
-    [
-     381.43,
-     193.5
-    ],
-    [
-     381.94,
-     193.5
-    ],
-    [
-     386.44,
-     193.69
-    ],
-    [
-     390.13,
-     193.76
-    ],
-    [
-     391.34,
-     193.57
-    ],
-    [
-     392.84,
-     193.35
-    ],
-    [
-     395.04,
-     193.67
-    ],
-    [
-     396.93,
-     193.46
-    ],
-    [
-     401.24,
-     193.6
-    ],
-    [
-     403.34,
-     193.69
-    ],
-    [
-     404.74,
-     193.58
-    ],
-    [
-     406.34,
-     193.67
-    ],
-    [
-     411.24,
-     193.98
-    ],
-    [
-     411.34,
-     193.98
-    ],
-    [
-     416.13,
-     194.04
-    ],
-    [
-     419.04,
-     193.99
-    ],
-    [
-     421.13,
-     194.12
-    ],
-    [
-     423.74,
-     194.08
-    ],
-    [
-     425.74,
-     194.21
-    ],
-    [
-     428.04,
-     194.18
-    ],
-    [
-     429.94,
-     194.13
-    ],
-    [
-     432.53,
-     194.03
-    ],
-    [
-     434.23,
-     194.2
-    ],
-    [
-     436.94,
-     194.03
-    ],
-    [
-     439.14,
-     194.13
-    ],
-    [
-     441.83,
-     194.05
-    ],
-    [
-     445.83,
-     194.23
-    ],
-    [
-     446.94,
-     194.3
-    ],
-    [
-     450.84,
-     194.11
-    ],
-    [
-     452.63,
-     193.96
-    ],
-    [
-     455.84,
-     194.3
-    ],
-    [
-     455.94,
-     194.31
-    ],
-    [
-     457.44,
-     194.12
-    ],
-    [
-     460.84,
-     194.15
-    ],
-    [
-     462.53,
-     194.05
-    ],
-    [
-     465.83,
-     194.1
-    ],
-    [
-     467.74,
-     194.21
-    ],
-    [
-     473.04,
-     194.18
-    ],
-    [
-     474.93,
-     194.07
-    ],
-    [
-     475.83,
-     194.16
-    ],
-    [
-     477.04,
-     194.03
-    ],
-    [
-     481.33,
-     194.06
-    ],
-    [
-     485.54,
-     194.25
-    ],
-    [
-     485.73,
-     194.26
-    ],
-    [
-     487.14,
-     194.08
-    ],
-    [
-     492.13,
-     194.19
-    ],
-    [
-     494.43,
-     194.36
-    ],
-    [
-     496.84,
-     194.13
-    ],
-    [
-     499.63,
-     194.26
-    ],
-    [
-     500.53,
-     194.21
-    ],
-    [
-     504.53,
-     194.04
-    ],
-    [
-     508.33,
-     194.19
-    ],
-    [
-     510.34,
-     193.97
-    ],
-    [
-     513.14,
-     193.97
-    ],
-    [
-     515.23,
-     193.88
-    ],
-    [
-     516.73,
-     193.79
-    ],
-    [
-     520.14,
-     193.93
-    ],
-    [
-     522.83,
-     193.95
-    ],
-    [
-     525.23,
-     193.88
-    ],
-    [
-     526.83,
      193.94
     ],
     [
+     353.84,
+     193.58
+    ],
+    [
+     357.24,
+     193.81
+    ],
+    [
+     361.64,
+     193.53
+    ],
+    [
+     364.53,
+     193.58
+    ],
+    [
+     366.34,
+     193.43
+    ],
+    [
+     369.83,
+     193.39
+    ],
+    [
+     371.53,
+     193.59
+    ],
+    [
+     371.84,
+     193.61
+    ],
+    [
+     373.83,
+     193.47
+    ],
+    [
+     377.03,
+     193.58
+    ],
+    [
+     381.43,
+     193.45
+    ],
+    [
+     381.94,
+     193.44
+    ],
+    [
+     386.44,
+     193.63
+    ],
+    [
+     390.13,
+     193.7
+    ],
+    [
+     391.34,
+     193.51
+    ],
+    [
+     392.84,
+     193.3
+    ],
+    [
+     395.04,
+     193.62
+    ],
+    [
+     396.93,
+     193.41
+    ],
+    [
+     401.24,
+     193.55
+    ],
+    [
+     403.34,
+     193.64
+    ],
+    [
+     404.74,
+     193.52
+    ],
+    [
+     406.34,
+     193.61
+    ],
+    [
+     411.24,
+     193.92
+    ],
+    [
+     411.34,
+     193.93
+    ],
+    [
+     416.13,
+     193.99
+    ],
+    [
+     419.04,
+     193.94
+    ],
+    [
+     421.13,
+     194.06
+    ],
+    [
+     423.74,
+     194.02
+    ],
+    [
+     425.74,
+     194.16
+    ],
+    [
+     428.04,
+     194.12
+    ],
+    [
+     429.94,
+     194.08
+    ],
+    [
+     432.53,
+     193.97
+    ],
+    [
+     434.23,
+     194.14
+    ],
+    [
+     436.94,
+     193.97
+    ],
+    [
+     439.14,
+     194.08
+    ],
+    [
+     441.83,
+     193.99
+    ],
+    [
+     445.83,
+     194.17
+    ],
+    [
+     446.94,
+     194.25
+    ],
+    [
+     450.84,
+     194.05
+    ],
+    [
+     452.63,
+     193.91
+    ],
+    [
+     455.84,
+     194.25
+    ],
+    [
+     455.94,
+     194.25
+    ],
+    [
+     457.44,
+     194.07
+    ],
+    [
+     460.84,
+     194.09
+    ],
+    [
+     462.53,
+     194.0
+    ],
+    [
+     465.83,
+     194.04
+    ],
+    [
+     467.74,
+     194.16
+    ],
+    [
+     473.04,
+     194.12
+    ],
+    [
+     474.93,
+     194.02
+    ],
+    [
+     475.83,
+     194.1
+    ],
+    [
+     477.04,
+     193.98
+    ],
+    [
+     481.33,
+     194.0
+    ],
+    [
+     485.54,
+     194.2
+    ],
+    [
+     485.73,
+     194.21
+    ],
+    [
+     487.14,
+     194.03
+    ],
+    [
+     492.13,
+     194.14
+    ],
+    [
+     494.43,
+     194.3
+    ],
+    [
+     496.84,
+     194.08
+    ],
+    [
+     499.63,
+     194.21
+    ],
+    [
+     500.53,
+     194.16
+    ],
+    [
+     504.53,
+     193.99
+    ],
+    [
+     508.33,
+     194.14
+    ],
+    [
+     510.34,
+     193.92
+    ],
+    [
+     513.14,
+     193.92
+    ],
+    [
+     515.23,
+     193.82
+    ],
+    [
+     516.73,
+     193.74
+    ],
+    [
+     520.14,
+     193.88
+    ],
+    [
+     522.83,
+     193.89
+    ],
+    [
+     525.23,
+     193.82
+    ],
+    [
+     526.83,
+     193.88
+    ],
+    [
      530.13,
-     187.02
+     186.97
     ],
     [
      530.24,
-     186.84
+     186.79
     ],
     [
      534.53,
-     185.95
+     185.9
     ],
     [
-     538.24,
-     186.01
-    ],
-    [
-     539.83,
-     185.91
-    ],
-    [
-     542.74,
-     186.06
-    ],
-    [
-     545.04,
-     185.82
-    ],
-    [
-     545.14,
-     185.82
-    ],
-    [
-     547.63,
-     186.0
-    ],
-    [
-     550.93,
-     185.94
-    ],
-    [
-     553.34,
-     185.98
-    ],
-    [
-     555.84,
-     185.98
-    ],
-    [
-     559.53,
-     185.8
-    ],
-    [
-     560.93,
-     185.94
-    ],
-    [
-     564.54,
+     536.34,
      185.86
     ],
     [
-     564.93,
+     538.24,
+     185.95
+    ],
+    [
+     542.74,
+     186.0
+    ],
+    [
+     545.04,
+     185.76
+    ],
+    [
+     545.14,
+     185.76
+    ],
+    [
+     547.63,
+     185.94
+    ],
+    [
+     550.93,
+     185.89
+    ],
+    [
+     553.34,
+     185.92
+    ],
+    [
+     555.84,
+     185.93
+    ],
+    [
+     559.53,
+     185.74
+    ],
+    [
+     560.93,
      185.88
     ],
     [
+     564.54,
+     185.8
+    ],
+    [
+     564.93,
+     185.82
+    ],
+    [
      569.84,
-     185.99
+     185.93
     ],
     [
      570.43,
-     185.97
+     185.92
     ],
     [
      574.73,
-     186.35
+     186.29
     ],
     [
      575.04,
-     186.37
+     186.31
     ],
     [
      579.74,
-     165.82
+     165.74
     ],
     [
      579.84,
-     164.7
+     164.62
     ],
     [
      583.64,
-     144.5
+     144.39
     ],
     [
      584.73,
-     146.16
+     146.06
     ],
     [
      589.63,
-     168.44
+     168.38
     ],
     [
      589.74,
-     168.91
+     168.85
     ],
     [
      594.54,
-     196.96
+     196.98
     ],
     [
      594.64,
-     197.49
+     197.51
     ]
    ],
-   "source": "px4_ulog:vehicle_local_position.x/y (horizontal, NED origin)",
-   "units": "m"
+   "source": "px4_ulog:vehicle_local_position.x/y - home_position.x/y (horizontal)",
+   "units": "m from home"
   },
   "gps_nsats": {
    "points": [

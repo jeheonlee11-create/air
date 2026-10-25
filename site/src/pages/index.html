@@ -124,11 +124,11 @@
       <thead><tr><th scope="col">T+</th><th scope="col">Event</th><th scope="col">Type</th></tr></thead>
       <tbody>
         <tr><td class="num">579.2&#8202;s</td><td>Estimated battery remaining reaches 0&#8202;%</td><td><span class="tag tag-evidence">Raw evidence</span></td></tr>
-        <tr><td class="num">586.9&#8202;s</td><td>Altitude peaks at 120.04&#8202;m — procedure limit is 120&#8202;m</td><td><span class="tag tag-verdict">Procedure verdict</span></td></tr>
+        <tr><td class="num">586.9&#8202;s</td><td>Height above the launch point peaks at 121.57&#8202;m — procedure limit is 120&#8202;m</td><td><span class="tag tag-verdict">Procedure verdict</span></td></tr>
         <tr><td class="num">591.7&#8202;s</td><td>Failsafe activated</td><td><span class="tag tag-evidence">Raw evidence</span></td></tr>
         <tr><td class="num">592.5–594.0&#8202;s</td><td>Failure detector trips on ROLL, three times</td><td><span class="tag tag-evidence">Raw evidence</span></td></tr>
         <tr><td class="num">594.4&#8202;s</td><td>Connection to ground station lost</td><td><span class="tag tag-evidence">Raw evidence</span></td></tr>
-        <tr><td class="num">594.6&#8202;s</td><td>Log ends while the vehicle is still armed at &#8776;12.6&#8202;m — consistent with sudden power loss; the cause is not determinable from this log alone</td><td><span class="tag tag-infer">Inference</span></td></tr>
+        <tr><td class="num">594.6&#8202;s</td><td>Log ends while the vehicle is still armed at &#8776;14.2&#8202;m above home — consistent with sudden power loss; the cause is not determinable from this log alone</td><td><span class="tag tag-infer">Inference</span></td></tr>
       </tbody>
     </table>
     </div>
@@ -147,19 +147,21 @@
         <span class="code">INT-TRUNC · critical</span>
         <h3>Log ends in flight</h3>
         <span class="tag tag-evidence">Raw evidence</span><span class="tag tag-infer">Inference</span>
-        <p>The log terminates while the vehicle is still armed at &#8776;12.6&#8202;m. An in-air
+        <p>The log terminates while the vehicle is still armed at &#8776;14.2&#8202;m above home. An in-air
         truncation is <em>consistent with</em> sudden power loss, controller brownout, or
         break-up — stated as an inference, never as a determined cause.</p>
-        <div class="evrow">evidence: vehicle_local_position.z = 12.64&#8202;m at final sample · threshold: final altitude &gt;3.0&#8202;m while armed · basis: ArduPilot LogAnalyzer TestBrownout, Copter-4.5.0</div>
+        <div class="evrow">evidence: home_position.z &#8722; vehicle_local_position.z = 14.17&#8202;m at final sample · threshold: final height &gt;3.0&#8202;m while armed · basis: ArduPilot LogAnalyzer TestBrownout, Copter-4.5.0</div>
       </article>
       <article class="finding f-crit">
         <span class="code">PROC-ALT-1 · critical</span>
-        <h3>Procedure violated: maximum altitude</h3>
+        <h3>Procedure violated: maximum height</h3>
         <span class="tag tag-verdict">Procedure verdict</span>
-        <p>Rule ALT-1 requires max altitude &#8804;120&#8202;m; the flight recorded
-        <strong>120.04&#8202;m</strong>. A marginal violation, reported at full precision —
-        in an incident record, precision is credibility.</p>
-        <div class="evrow">observed: 120.04 · limit: 120 · ruleset: sample Part 107-style demonstration ruleset (operators supply their own)</div>
+        <p>Rule ALT-1 requires a maximum of 120&#8202;m above the launch point; the flight recorded
+        <strong>121.57&#8202;m</strong>, beyond the rule's 1&#8202;m measurement tolerance. The
+        reference is stated: height above home, which equals height above ground only where the
+        terrain is level with the launch point. A value within the tolerance would be reported as
+        MARGINAL, not as a violation.</p>
+        <div class="evrow">observed: 121.57 · limit: 120 · tolerance: 1.0 · estimator vertical uncertainty at peak: 0.42&#8202;m · ruleset: sample Part 107-style demonstration ruleset (operators supply their own)</div>
       </article>
       <article class="finding f-crit">
         <span class="code">PROC-BAT-1 · critical</span>
@@ -179,14 +181,15 @@
         record quotes both and takes no side.</p>
         <div class="evrow">baro: 204.73&#8202;m · GPS: 164.01&#8202;m · thresholds: warn &gt;10&#8202;m, fail &gt;25&#8202;m · basis: offset-corrected cross-source residual (labeled heuristic)</div>
       </article>
-      <article class="finding f-warn">
-        <span class="code">BAT-SAG · warning</span>
-        <h3>Severe voltage sag</h3>
+      <article class="finding f-crit">
+        <span class="code">BAT-SAG · critical</span>
+        <h3>Voltage collapse under load</h3>
         <span class="tag tag-evidence">Raw evidence</span><span class="tag tag-calc">Calculation</span>
-        <p>Voltage sagged from 31.30&#8202;V at flight start to 12.74&#8202;V (59&#8202;%),
-        consistent with a degraded or overloaded battery — worded as an indicator,
-        with its threshold labeled a heuristic.</p>
-        <div class="evrow">evidence: battery_status.voltage_filtered_v · threshold: sag &gt;25% of flight-start voltage (heuristic)</div>
+        <p>Voltage fell from 26.0&#8202;V to 12.8&#8202;V within 10&#8202;s, reaching the low point
+        at T+587.8&#8202;s (51&#8202;% below the recent baseline). Normal discharge cannot drop that
+        fast; the pack could not hold voltage — worded as an indicator, with its threshold
+        labeled a heuristic.</p>
+        <div class="evrow">evidence: battery_status.voltage_filtered_v, current_filtered_a · threshold: drop below the highest voltage of the preceding 10&#8202;s, warn &gt;15%, critical &gt;30% (heuristic)</div>
       </article>
       <article class="finding f-warn">
         <span class="code">EKF-MAGNETOMETER · warning</span>
@@ -273,8 +276,8 @@
       are supported today.</caption>
       <thead><tr><th scope="col">Rule</th><th scope="col">Requirement</th><th scope="col">Observed</th><th scope="col">Verdict</th></tr></thead>
       <tbody>
-        <tr><td class="num">ALT-1</td><td>Maximum altitude 120&#8202;m AGL</td><td class="num">120.04&#8202;m</td><td><span class="verdict v-fail">FAIL</span></td></tr>
-        <tr><td class="num">DIST-1</td><td>Max distance from launch 500&#8202;m</td><td class="num">356.95&#8202;m</td><td><span class="verdict v-pass">PASS</span></td></tr>
+        <tr><td class="num">ALT-1</td><td>Maximum 120&#8202;m above launch point</td><td class="num">121.57&#8202;m</td><td><span class="verdict v-fail">FAIL</span></td></tr>
+        <tr><td class="num">DIST-1</td><td>Max distance from launch 500&#8202;m</td><td class="num">356.91&#8202;m</td><td><span class="verdict v-pass">PASS</span></td></tr>
         <tr><td class="num">SPD-1</td><td>Maximum groundspeed 19&#8202;m/s</td><td class="num">17.88&#8202;m/s</td><td><span class="verdict v-pass">PASS</span></td></tr>
         <tr><td class="num">GPS-1</td><td>Minimum 6 GPS satellites</td><td class="num">min 20</td><td><span class="verdict v-pass">PASS</span></td></tr>
         <tr><td class="num">BAT-1</td><td>Land with &#8805;15% battery</td><td class="num">0.00&#8202;%</td><td><span class="verdict v-fail">FAIL</span></td></tr>
@@ -284,20 +287,25 @@
     </div>
     <p class="small">When required telemetry is missing, the verdict is
     <span class="verdict v-ne">NOT&#8202;EVALUABLE</span> — with what's missing and why. On our
-    evaluation sample, 79 of 99 parsed logs were fully evaluable and every gap was reported.</p>
+    evaluation sample (measured with the July 2026 engine, before altitude rules switched to
+    height above home), 79 of 99 parsed logs were fully evaluable and every gap was reported.</p>
 
     <h3>Record integrity</h3>
     <div class="integrity">
       <h3>This exact analysis, sealed</h3>
-      <p class="hash">merkle root (RFC 9162) · 2dad81962328718c79affa8c3a575937eaa766c8aea95fe2e2f81be1feee4f75<br>
-      leaf 1 · report.json (canonical bytes)<br>
+      <p class="hash">merkle root (RFC 9162) · 61c7e1c1633ef7dc91e8e12cf5f5902f30605655b81bb9c30cfc7305412bec72<br>
+      leaf 0 · report.json (canonical bytes)<br>
+      leaf 1 · report.html (the human-readable page)<br>
       leaf 2 · 75957ba9….ulg · sha256 4542956597d8d1a9…<br>
-      leaf 3 · sample_ops_manual.json · sha256 f29e0240ad1bb97a…<br>
+      leaf 3 · sample_ops_manual.json · sha256 aec6aff216e3f276…<br>
       signature · Ed25519 over the root · timestamp · RFC 3161 (optional; skipped in this regeneration)</p>
-      <p class="vline">$ python3 verify.py<br>VERIFICATION PASSED — record is intact and untampered. (exit 0)</p>
-      <p>Change one byte of any finding and verification fails — we test exactly that.
-      What this proves: the record hasn't changed since signing, and the source files match
-      their digests. What it deliberately does not prove: who signed it, that the analysis
+      <p class="vline">$ python3 verify.py --fingerprint &lt;operator's published fingerprint&gt;<br>VERIFICATION PASSED — record is intact and signed by the trusted key. (exit 0)<br>
+      $ python3 verify.py<br>VERIFICATION INCOMPLETE — integrity OK, signer NOT verified (exit 3)</p>
+      <p>Change one byte of any finding, of the HTML page, or of a source file and verification
+      fails — we test exactly that. The key inside the bundle is not trusted on its own: without
+      the operator's published fingerprint the verifier says the signer is unverified.
+      What this proves: the record hasn't changed since it was signed by that key, and the source
+      files match their digests. What it deliberately does not prove: who controls the key, that the analysis
       is true, or anything legal. Cryptography seals the record; it doesn't decide the
       case.</p>
     </div>
@@ -396,8 +404,8 @@
     <div class="limits">
       <div class="limit"><span class="mono-k">FORMATS</span><h3>PX4 .ulg only today</h3><p>ArduPilot dataflash and DJI logs are not implemented. They're the roadmap's top items — DJI additionally depends on a revocable vendor key.</p></div>
       <div class="limit"><span class="mono-k">PROCEDURES</span><h3>Six quantitative rule types</h3><p>Altitude, distance, speed, GPS count, landing battery, forbidden modes. Real ops manuals also contain weather minima, airspace, and crew rules AIR can't express yet.</p></div>
-      <div class="limit"><span class="mono-k">ALTITUDE</span><h3>EKF-origin relative, not terrain AGL</h3><p>"AGL" altitude is relative to the arming origin (barometric fallback), not terrain-corrected. Over sloping terrain the number diverges from true AGL.</p></div>
-      <div class="limit"><span class="mono-k">CRYPTOGRAPHY</span><h3>Integrity, not truth</h3><p>The signature proves the record hasn't changed and sources match digests. It does not prove signer identity, analysis correctness, legal compliance, or admissibility.</p></div>
+      <div class="limit"><span class="mono-k">ALTITUDE</span><h3>Height above launch, not terrain AGL</h3><p>Altitude rules use height above the home (launch) position, not terrain-corrected AGL; over sloping terrain the two differ. Without a logged home position the rule is NOT EVALUABLE — barometric altitude is never substituted.</p></div>
+      <div class="limit"><span class="mono-k">CRYPTOGRAPHY</span><h3>Integrity, not truth</h3><p>The signature shows the record hasn't changed and sources match digests. It does not prove who controls the signing key, analysis correctness, legal compliance, or admissibility. AIR's records are meant to support a qualified person's certification; AIR does not certify identity or admissibility itself.</p></div>
       <div class="limit"><span class="mono-k">EVALUATION</span><h3>100 processed logs</h3><p>Public evaluation covers a 100-log seeded sample, not the 436,637-log corpus, and a fresh-seed confirmation run is still owed.</p></div>
       <div class="limit"><span class="mono-k">SCOPE</span><h3>Single-source evidence today</h3><p>Weather, Remote ID, and detection-alert ingest are roadmap, not product. Today's records are built from the flight log plus your procedures.</p></div>
       <div class="limit"><span class="mono-k">JUDGMENT</span><h3>Not an investigator</h3><p>AIR is not a guaranteed crash detector and not a replacement for a trained investigator. It prepares the evidence a human decides with.</p></div>

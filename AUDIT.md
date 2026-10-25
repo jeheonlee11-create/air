@@ -1,6 +1,8 @@
 # AIR v0.1 — Product Audit
 **Date: 2026-07-28. Auditor: automated inspection + experiments in this repo. Every statement below was verified against the code or by running an experiment; experiments are reproducible with the commands shown.**
 
+**Update 2026-10-24.** Sections 3, 4 and 6-8 were revised to match the code after these changes: verifier trust anchor (`--fingerprint` / `--trusted-key`, exit 3 without one), RFC 3161 token parsing with CMS signature check and optional `--tsa-ca` chain validation, `report.html` committed as a signed Merkle leaf, altitude rules on height above home with a measurement tolerance and a MARGINAL verdict, staleness-bounded time alignment, arm-cycle parsing, rolling-baseline battery sag, and procedure-file validation. The evaluation numbers in EVALUATION.md were measured before these changes and have not been re-run.
+
 Scope note on legal language: nothing in this audit or product should be described as court-admissible, legally compliant, or legally sufficient. The cryptography supports *integrity verification* of the record; it does not establish legal conclusions.
 
 ## 1. Supported formats
@@ -23,7 +25,7 @@ All analyzers are deterministic pure functions of the parsed log: fixed threshol
 
 | Finding | Threshold | Basis (as cited in code and report output) |
 |---|---|---|
-| INT-TRUNC ends-in-flight | final altitude > 3.0 m while armed | ArduPilot LogAnalyzer `TestBrownout` `finalAltMax=3.0`, Copter-4.5.0 tag (tool deleted from ArduPilot master Aug 2024) |
+| INT-TRUNC ends-in-flight | last arm cycle never disarms and final height > 3.0 m (above home; else height change since that arm) | ArduPilot LogAnalyzer `TestBrownout` `finalAltMax=3.0`, Copter-4.5.0 tag (tool deleted from ArduPilot master Aug 2024) |
 | INT-NAN | any NaN in a normalized series | ArduPilot LogAnalyzer `TestNaN` port |
 | INT-CORRUPT | parser corruption flag | `pyulog` `ULog.file_corruption` |
 | GPS-SATS | warn <6, fail <5 satellites | ArduPilot LogAnalyzer `TestGPSGlitch` `minSatsWARN/FAIL` |
@@ -36,19 +38,19 @@ All analyzers are deterministic pure functions of the parsed log: fixed threshol
 | VIB-CLIP | any clipping warn; >100 events critical | clipping invalidates samples by definition |
 | IMU-DISAGREE | warn >0.7, fail >1.5 m/s² | **Heuristic** near PX4 sensors-module defaults — labeled as such |
 | BAT-LOW | warn <15%, critical <7% | dronekit-la `low_battery_threshold=15%` (7% is our extension, labeled) |
-| BAT-SAG | >25% drop from flight-start voltage | **Heuristic** (LiPo sag) — labeled as such |
-| CONF-ALT-* divergence | warn >10 m, fail >25 m | **Heuristic** offset-corrected cross-source residual — labeled as such |
+| BAT-SAG | drop >15% (warn) / >30% (critical) below the highest voltage of the preceding 10 s | **Heuristic** (sag under load, not discharge) — labeled as such |
+| CONF-ALT-* divergence | warn >10 m, fail >25 m; samples older than 1 s are gaps, not compared | **Heuristic** offset-corrected cross-source residual — labeled as such. Baro-vs-EKF is labeled not independent when the EKF is baro-referenced |
 
 Honest characterization: roughly half the thresholds are direct ports of published/community rulesets; the rest are heuristics and are labeled "heuristic" in the finding's `threshold.basis` field. No threshold was tuned against the evaluation set (they were fixed before the harness existed; sources are external rulesets).
 
 ## 4. What "procedure conformance" currently checks
 
 Six declarative metrics evaluated over the flight window (arm→disarm/end), against a JSON ruleset the operator supplies:
-`max_alt_agl_m`, `max_dist_home_m`, `max_groundspeed_ms`, `min_gps_sats`, `battery_at_landing_pct`, `modes_flown` (forbidden-mode list). Verdicts: PASS / FAIL / **NOT_EVALUABLE** (missing data is reported, never silently passed). Each verdict carries the extreme value, its timestamp, and the source channel.
+`max_alt_agl_m`, `max_dist_home_m`, `max_groundspeed_ms`, `min_gps_sats`, `battery_at_landing_pct`, `modes_flown` (forbidden-mode list). Verdicts: PASS / FAIL / **MARGINAL** (past the limit by no more than the rule's measurement tolerance; default 1 m for altitude, 2 m for distance, 0.5 m/s for speed, overridable per rule) / **NOT_EVALUABLE** (missing data is reported, never silently passed). Each verdict carries the extreme value, its timestamp, the source channel and, for position rules, the reference frame. Procedure files are validated before analysis; a malformed rule produces one error listing every problem.
 
 **Known caveats (documented limitations, not bugs):**
-- "AGL" altitude is EKF local altitude relative to the arming origin (fallback: barometric). It is not terrain-corrected AGL; over sloping terrain the number diverges from true AGL.
-- `max_dist_home_m` uses the EKF local origin as "home", which is set at EKF start, not necessarily the launch point.
+- `max_alt_agl_m` is height above the home (launch) position: `home_position.z − vehicle_local_position.z`. It is not terrain-corrected AGL; over terrain not level with the launch point it diverges from true AGL. If `home_position` is absent the rule is NOT_EVALUABLE; barometric and EKF-origin altitude are never substituted.
+- `max_dist_home_m` is horizontal distance from `home_position` in the EKF local frame (NOT_EVALUABLE without it). An EKF origin reset mid-flight is not yet handled.
 - `battery_at_landing_pct` is battery at *end of in-flight data*; if the log truncates mid-air this is "battery at last evidence", which is the conservative reading for an investigator.
 - It checks 6 quantitative rule types. A real ops manual contains many rule types (weather minima, airspace, crew requirements) that are not yet expressible.
 
@@ -60,26 +62,26 @@ Limitation: offset estimation from early samples assumes the sources agree at fl
 
 ## 6. Cryptographic implementation
 
-- **RFC 9162 Merkle tree** (`air/evidence/merkle.py`): exact §2.1 MTH construction; `0x00`/`0x01` leaf/node domain separation; split at largest power of two < n; no lonely-leaf duplication; inclusion proofs per §2.1.3.1 and verification per §2.1.3.2. Leaves: canonical `report.json` bytes (leaf 0), then each source file's SHA-256 hex digest as ASCII bytes (leaves 1..n).
-- **Ed25519** (`air/evidence/signing.py`): `cryptography` library; signs the raw 32-byte Merkle root; dev keypair auto-generated to `keys/air_signing_key.pem` (PKCS8 PEM, file mode 0600, gitignored). Canonical JSON = sorted keys, compact separators, UTF-8.
-- **RFC 3161** (`air/evidence/timestamp.py`): `rfc3161-client` builds the request; POSTs to FreeTSA (`https://freetsa.org/tsr`) over httpx, 10 s timeout; message imprint = SHA-256 of the Merkle root; full DER token stored base64 in the manifest. Any failure degrades to `status: unavailable` with the error recorded — the bundle is still produced and signed.
-- **Not implemented / known gaps:** no HSM/KMS (dev key on disk); one static TSA with no redundancy; the verifier checks the token's *claimed imprint binding*, not the TSA's certificate chain (see §7); no transparency-log publication of tree heads yet.
+- **RFC 9162 Merkle tree** (`air/evidence/merkle.py`): exact §2.1 MTH construction; `0x00`/`0x01` leaf/node domain separation; split at largest power of two < n; no lonely-leaf duplication; inclusion proofs per §2.1.3.1 and verification per §2.1.3.2. Leaves: canonical `report.json` bytes (leaf 0), `report.html` bytes (leaf 1), then each source file's SHA-256 hex digest as ASCII bytes (leaves 2..n+1). The layout is recorded in `report.json` (`bundle_layout`), so it is itself covered.
+- **Ed25519** (`air/evidence/signing.py`): `cryptography` library; signs the raw 32-byte Merkle root; keypair auto-generated on first use in `$AIR_KEY_DIR` or `~/.air/keys/air_signing_key.pem` (PKCS8 PEM, file mode 0600, outside the repo), announced on stderr with its fingerprint. Canonical JSON = sorted keys, compact separators, UTF-8.
+- **RFC 3161** (`air/evidence/timestamp.py`): `rfc3161-client` builds the request; POSTs to FreeTSA (`https://freetsa.org/tsr`) over httpx, 10 s timeout; the request covers the Merkle root (FreeTSA answers with a SHA-512 imprint); full DER response stored base64 in the manifest. Any failure degrades to `status: unavailable` with the error recorded — the bundle is still produced and signed.
+- **Not implemented / known gaps:** no HSM/KMS (key on disk); one static TSA with no redundancy; TSA chain validation only with `--tsa-ca` (needs `openssl`); no PKI binding the signing key to an operator identity; no transparency-log publication of tree heads yet.
 
 ## 7. Offline verifier
 
-`verify.py` (copied into every bundle) uses Python stdlib + `cryptography` only. **It performs no network access** (verified by code inspection: file I/O only). Checks: (1) report.json inclusion against the Merkle root, (2) every source-digest leaf inclusion, (3) Ed25519 signature over the root using the public key *embedded in the bundle*, (4) RFC 3161 token imprint binding, (5) re-hash of any source files present locally.
+`verify.py` (copied into every bundle) uses Python stdlib + `cryptography` only. **It performs no network access** (verified by code inspection: file I/O only). Checks: (1) report.json inclusion against the Merkle root, (2) report.html inclusion, (3) every source-digest leaf inclusion, (4) Ed25519 signature over the root, and whether the signer matches a trust anchor supplied from outside the bundle (`--fingerprint` or `--trusted-key`), (5) RFC 3161: the token's own messageImprint (in its own hash algorithm) matches the root, genTime read from the token, the CMS signature verifies with the certificate embedded in the token, and with `--tsa-ca` the TSA chain validates via `openssl ts -verify`, (6) re-hash of any source files present locally. Without `--tsa-ca` and `openssl` the verifier performs no subprocess calls.
 
-**Honest limitations, stated in its output:** check 4 verifies that the recorded imprint matches the root — it does **not** cryptographically validate the TSA's signature or certificate chain (the output points to `openssl ts` for that). Check 3 proves the bundle was signed by the embedded key; binding that key to a specific operator/vendor identity requires key distribution infrastructure that does not exist yet. Experimentally verified: unchanged bundle → exit 0; single-byte change in `report.json` → exit 1.
+**Honest limitations, stated in its output:** the public key inside the bundle is not a trust anchor; without `--fingerprint`/`--trusted-key` the verifier reports "integrity OK, signer NOT verified" and exits 3. A fingerprint shows which key signed, not who controls it: there is no PKI binding keys to operator identities. Without `--tsa-ca` the TSA certificate is not tied to a trusted root. Tested in `tests/`: unchanged bundle with trust anchor → exit 0; single-byte change in `report.json` or `report.html` → exit 1; re-signed forgery → exit 1 with the anchor.
 
 ## 8. Exactly what the signed record includes and excludes
 
 **Committed (under the signed Merkle root):**
+- `report.html`, the human-readable rendering (it shows the key fingerprint; it cannot contain the root it is hashed into).
 - `report.json`, canonically encoded: generator version, incident id, created time, aircraft metadata, flight window + UTC anchor + home position, source-file digests, all findings with evidence samples and thresholds, full conformance results, the **full event timeline**, and a **series inventory** (names, provenance, sample counts, units).
 - The SHA-256 digest of every source file (the raw flight log and the procedures file). The raw files themselves stay wherever the operator keeps them; the digests bind them immutably to the record.
 
 **NOT committed (excluded from the signature):**
 - **Raw telemetry arrays** — the record contains evidence *samples* (specific values at specific timestamps) and the series inventory, not the full time series. Consequence: the record proves what the log file was (by digest) and what AIR concluded, but re-deriving the conclusions requires the original log file plus a rerun.
-- `report.html` — explicitly labeled an unsigned *rendering* of report.json.
 - `manifest.json` itself (it carries the signature; it cannot be under it). Tampering with the manifest breaks verification anyway (wrong root/signature/proofs).
 - The RFC 3161 token arrives after root computation and lives in the manifest, outside the tree.
 
@@ -99,7 +101,7 @@ Limitation: offset estimation from early samples assumes the sources agree at fl
 ## 10. Secrets / hardcoded material
 
 - **No private keys, tokens, or credentials in tracked files** (verified: `git grep` for PEM blocks and secret patterns; hits are code identifiers only).
-- `keys/air_signing_key.pem` exists on disk (dev key, 0600) and is **gitignored**; `bundles/`, `fixtures/*.ulg`, `fixtures/dbinfo.json`, `.venv/` are gitignored. `.DS_Store` was tracked and has been removed from tracking.
+- The signing key lives outside the repo by default (`~/.air/keys`, 0600); `keys/` is also **gitignored** for older setups; `bundles/`, `fixtures/*.ulg`, `fixtures/dbinfo.json`, `.venv/` are gitignored. `.DS_Store` was tracked and has been removed from tracking.
 - Hardcoded external endpoints: FreeTSA URL (`air/evidence/timestamp.py`) and the PX4 corpus CDN in the eval harness — both documented. **The only network calls in the entire pipeline are (a) the opt-in RFC 3161 request, which sends a 32-byte hash and never log data, and (b) evaluation-harness downloads.**
 - No hardcoded findings, timestamps, fixtures-as-results, or demo data anywhere in the analysis path. The three fixture logs are real public-corpus downloads used as development fixtures; they are excluded from the evaluation sample (see EVALUATION.md).
 

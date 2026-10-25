@@ -319,9 +319,10 @@ def render_html(inc: Incident, findings: list[Finding], conformance: dict | None
   <div style="margin-top:34px;padding-top:14px;border-top:1px solid {GRID};font-size:11px;color:{MUTED};line-height:1.6">
     This page is a human-readable rendering of <span style="font-family:ui-monospace,monospace">report.json</span>; both are covered by the bundle signature.
     All findings are produced by deterministic, documented rules (no machine-learning inference); every threshold cites its basis.
-    Cryptographic integrity protections are designed to support authentication of this record as an electronic record
-    (cf. Fed. R. Evid. 902(13)/(14)); authentication is distinct from admissibility, and conclusions about cause
-    remain the responsibility of a qualified investigator. Findings marked as indicators (e.g. interference indicators)
+    The signature and hashes show whether this record changed after signing; they do not show who controls the
+    signing key, and they do not make the record admissible. AIR produces records intended to support a qualified
+    person's certification (for example under Fed. R. Evid. 902(13)/(14)); it does not itself certify identity or
+    admissibility. Conclusions about cause remain the responsibility of a qualified investigator. Findings marked as indicators (e.g. interference indicators)
     are stated with their corroboration requirements and are not conclusions.
   </div>
 </div></body></html>"""

@@ -40,11 +40,13 @@
   </ul>
 
   <h2>What the record's cryptography claims — and doesn't</h2>
-  <p>AIR's record format proves integrity: that a record has not changed since signing and
-  that source files match their committed digests. It does not prove signer identity (no key
-  distribution infrastructure exists yet), does not validate timestamp-authority certificate
-  chains in the bundled verifier, and does not make any legal claim. If you can break the
-  integrity property, we want to know urgently.</p>
+  <p>AIR's record format shows integrity: that a record (both report.json and report.html)
+  has not changed since signing and that source files match their committed digests. The
+  verifier checks the signer against a key fingerprint the operator publishes separately;
+  that shows which key signed, not who controls it (there is no identity PKI). It checks an
+  RFC 3161 token's imprint and signature, and validates the timestamp authority's certificate
+  chain only when given a trusted CA (<code>--tsa-ca</code>). It makes no legal claim. If you
+  can break the integrity property, we want to know urgently.</p>
 
   <h2>Out of scope</h2>
   <p>Volume-based attacks on the static host, reports about third-party services (Cloudflare),
