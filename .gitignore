@@ -61,3 +61,7 @@ build/
 # --- Personal application drafts (kept locally, never published) ---
 discovery/SPC_APPLICATION.md
 docs/discovery/SPC_APPLICATION.md
+
+# Internal discovery and outreach notes (local only)
+discovery/
+docs/discovery/

@@ -60,7 +60,7 @@ Exact-phrase sweeps for "Merkle", "RFC 3161", "tamper-evident report", digital s
 
 ## 4. Market hypotheses [INFERENCE unless noted]
 
-Buyer segments, cheapest first (per discovery plan in [`discovery/`](discovery/)): commercial fleet operators, drone manufacturers (PX4-based), inspection companies, universities/test sites, insurers/investigators, public-safety teams. The agency/counter-UAS segment from v1 remains interesting but is procurement-heavy and now correctly scoped (Section 3) — it is a later, harder market, not the wedge for a solo founder [INFERENCE].
+Buyer segments, cheapest first: commercial fleet operators, drone manufacturers (PX4-based), inspection companies, universities/test sites, insurers/investigators, public-safety teams. The agency/counter-UAS segment from v1 remains interesting but is procurement-heavy and now correctly scoped (Section 3) — it is a later, harder market, not the wedge for a solo founder [INFERENCE].
 
 Pricing anchors that are sourced: Litigation Forensics publishes $3,000–$6,000 for flight-log analysis and $6,000–$12,000 for incident reconstruction as manual services ([litigationforensics.com](https://litigationforensics.com/services/drone-forensics)); Airdata enterprise per-drone pricing ~$120–240/yr via resellers; USAIG contributes up to $2,500/policy-year toward safety software (Polaris VOCUS precedent, [usau.com](https://www.usau.com/safety/polaris-vocus/)). What any buyer will pay for AIR specifically: **unknown until discovery interviews happen.**
 
@@ -83,7 +83,7 @@ Engine correctness properties (determinism, tamper-evidence, honest abstention, 
 ## 7. Next 30 days (gated, in order)
 
 1. Attorney review of REGULATORY_QUESTIONS.md **[requires founder: engage counsel]**.
-2. 10 discovery interviews from [`discovery/`](discovery/) (founder sends; nothing is sent by tooling).
+2. 10 discovery interviews (founder sends; nothing is sent by tooling).
 3. Fresh-seed confirmation run of the evaluation before quoting numbers externally.
 4. ArduPilot `.bin` ingestion only if ≥3 interviewees fly ArduPilot [gate].
 5. Decision on comment filing after (1) and (2) **[founder decision]**.
