@@ -57,3 +57,7 @@ data/raw/
 dist/
 build/
 .DS_Store
+
+# --- Personal application drafts (kept locally, never published) ---
+discovery/SPC_APPLICATION.md
+docs/discovery/SPC_APPLICATION.md

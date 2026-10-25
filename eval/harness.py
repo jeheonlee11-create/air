@@ -2,7 +2,7 @@
 
 PRE-REGISTERED DESIGN (fixed before any evaluation run; do not tune analyzers
 against these results — thresholds derive from external rulesets and were
-frozen in AUDIT.md prior to this harness existing):
+frozen in docs/AUDIT.md prior to this harness existing):
 
 Sample:  seeded (SEED=42) stratified draw from the public Flight Review index
          (https://cdn.logs.px4.io/dbinfo.json):

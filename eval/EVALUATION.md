@@ -6,7 +6,7 @@
 - **Tested:** a seeded, stratified sample of **120 logs** drawn from the public PX4 Flight Review index (436,637 entries): 45 crash-labeled (`crash_sw_hw`/`crash_pilot`), 45 healthy-labeled (`good`/`great`), 30 unlabeled. 20 were skipped by the pre-set 20 MB per-log size cap, leaving **100 processed** (34 crash-labeled, 41 healthy-labeled, 25 unlabeled). The three development fixture logs were excluded from sampling (they were used to build the analyzers).
 - **Not tested:** the other 436,517 corpus logs. **No claim in this document extends beyond the 100 processed logs.** The size cap biases the sample toward shorter flights; this is a known, disclosed bias.
 - Labels are **uploader-assigned ratings**, not verified ground truth. A "crash" label may describe a session the uploader considered a crash for any reason; a "good" label may hide problems. All label-based numbers inherit this noise.
-- Contamination controls: analyzer thresholds were fixed (from external published rulesets, documented in AUDIT.md) before the harness existed; fixtures excluded; the classification rule was pre-registered in the harness docstring before the first run and not changed afterward.
+- Contamination controls: analyzer thresholds were fixed (from external published rulesets, documented in [docs/AUDIT.md](../docs/AUDIT.md)) before the harness existed; fixtures excluded; the classification rule was pre-registered in the harness docstring before the first run and not changed afterward.
 - RFC 3161 timestamping was disabled for all evaluation runs; the only network use was corpus downloads (round 1: 744 MB; round 2: 489 MB; all streamed and deleted after processing).
 
 ## Two rounds — what changed and why

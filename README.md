@@ -46,7 +46,7 @@ curl -L -o fixtures/75957ba9-f979-430d-a49c-8ef6e5ceec12.ulg \
 Upload a `.ulg` (or click "Run the sample crash instead"), get the incident
 record, download the signed bundle, verify it offline. Binds to localhost only;
 no data leaves the machine (the RFC 3161 timestamp is opt-in and sends a
-32-byte hash only). Demo walkthrough and scripts: [DEMO.md](DEMO.md).
+32-byte hash only). Demo walkthrough and scripts: [docs/DEMO.md](docs/DEMO.md).
 
 ## Evaluation
 
@@ -55,7 +55,7 @@ Reproducible harness against a seeded 120-log sample of the public PX4 corpus
 errors, deterministic reruns 10/10, tamper detection 5/5, and a
 zero-false-positive (low-recall) ends-in-flight signal vs uploader labels.
 Full numbers, both evaluation rounds, and all caveats: [eval/EVALUATION.md](eval/EVALUATION.md).
-Product audit (formats, thresholds, failure behavior, crypto scope): [AUDIT.md](AUDIT.md).
+Product audit (formats, thresholds, failure behavior, crypto scope): [docs/AUDIT.md](docs/AUDIT.md).
 
 ## What's implemented (v0.1)
 
@@ -85,7 +85,7 @@ are uploader-assigned and noisy, not verified ground truth.
 - Detection-alert ingestion (counter-UAS sensor exports) → the §124.13(c)
   48-hour post-operation report generator
 - Part 124 audit-trail mode: 6-year retention ledger, purge verification
-  records, dissemination log (see STRATEGY.md)
+  records, dissemination log (see docs/STRATEGY.md)
 - Hourly Merkle tree head → public transparency log + contracted TSA/QTSP
 
 ## Repository layout
@@ -100,7 +100,7 @@ air/
 verify.py             standalone offline verifier (copied into every bundle)
 procedures/           declarative ops-manual rulesets
 fixtures/             real labeled crash logs (public PX4 corpus)
-STRATEGY.md           full market synthesis, moat plan, 90-day GTM
+docs/                 strategy, audit, demo script, discovery: full market synthesis, moat plan, 90-day GTM
 ```
 
 Keys in `keys/` are development keys; production signing belongs in an HSM/KMS.

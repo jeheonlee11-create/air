@@ -1,7 +1,7 @@
 # AIR website claims ledger
-**Every sentence on the public site must trace to a claim ID below. Claims not listed here may not appear on the site. Generated 2026-07-28 from: AUDIT.md, eval/EVALUATION.md (round 2 authoritative), DEMO.md, ONE_PAGER.md, STRATEGY.md v2, and the canonical regenerated bundle `bundles/site-source/`. Section C and A6/A7 updated 2026-10-24 after the engine changes of that date (bundle regenerated: merkle root `61c7e1c1…`, RFC 3161 skipped). Section B numbers were measured with the July engine and have not been re-run.**
+**Every sentence on the public site must trace to a claim ID below. Claims not listed here may not appear on the site. Generated 2026-07-28 from: docs/AUDIT.md, eval/EVALUATION.md (round 2 authoritative), docs/DEMO.md, docs/ONE_PAGER.md, docs/STRATEGY.md v2, and the canonical regenerated bundle `bundles/site-source/`. Section C and A6/A7 updated 2026-10-24 after the engine changes of that date (bundle regenerated: merkle root `61c7e1c1…`, RFC 3161 skipped). Section B numbers were measured with the July engine and have not been re-run.**
 
-## A. Verified product facts [source: AUDIT.md §1–8; code in this repo; reproducible]
+## A. Verified product facts [source: docs/AUDIT.md §1–8; code in this repo; reproducible]
 
 - **A1** AIR ingests PX4 ULog (`.ulg`) flight logs. It supports nothing else today.
 - **A2** All analyzers are deterministic rules — no ML verdicts; every finding carries its threshold and the threshold's basis (published ruleset or labeled heuristic).
