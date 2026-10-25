@@ -1,4 +1,12 @@
 # AIR v0.1 — Evaluation Report
+
+> **Status (2026-10-24):** these numbers were measured with the engine at commit `cd67b86`.
+> Later changes (arm-cycle parsing, height-above-home altitude rules with a measurement
+> tolerance, 1 s staleness bound in cross-source alignment, rolling-baseline battery sag,
+> signed report.html, verifier trust anchor) can change individual results, and the
+> evaluation has not been re-run. In particular, "Verification of unchanged bundles: exit 0"
+> was measured before the verifier required a trust anchor; today it exits 0 only with
+> `--fingerprint`/`--trusted-key` and 3 without one (the harness passes `--trusted-key`).
 **Date: 2026-07-28 · Harness: `eval/harness.py` (seed 42) + `eval/rerun_subset.py` · Machine-readable results: `eval/results.json` (round 1), `eval/results_round2.json` (round 2, authoritative)**
 
 ## What was tested, and what was not
@@ -59,4 +67,4 @@ Rule (fixed before run 1): *predict crash iff the record contains critical INT-T
 .venv/bin/python eval/harness.py                 # full run (downloads ~750 MB, deletes after)
 .venv/bin/python eval/rerun_subset.py            # round-2 targeted rerun
 ```
-Requires `fixtures/dbinfo.json` (see README). Results land in `eval/results*.json`.
+Requires `fixtures/dbinfo.json` (`curl -L -o fixtures/dbinfo.json https://cdn.logs.px4.io/dbinfo.json`). Results land in `eval/results*.json`.
