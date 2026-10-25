@@ -40,3 +40,30 @@ def test_conformance_operators():
     assert not _passes(["TERMINATION", "POSITION"], "not_contains", ["TERMINATION"])
     with pytest.raises(ValueError):
         _passes(1, "!!", 2)
+
+
+def test_default_key_dir_is_independent_of_cwd(tmp_path, monkeypatch):
+    from air.evidence.signing import KEY_DIR_ENV, default_key_dir
+
+    monkeypatch.delenv(KEY_DIR_ENV, raising=False)
+    monkeypatch.setenv("HOME", str(tmp_path / "home"))
+    monkeypatch.chdir(tmp_path)
+    assert default_key_dir() == str(tmp_path / "home" / ".air" / "keys")
+    monkeypatch.setenv(KEY_DIR_ENV, str(tmp_path / "custom"))
+    assert default_key_dir() == str(tmp_path / "custom")
+
+
+def test_cli_uses_default_key_dir(tmp_path, monkeypatch):
+    from air import cli
+    from air.evidence.signing import KEY_DIR_ENV
+
+    seen = {}
+
+    def fake_investigate(log, procedures, out, key_dir, with_timestamp):
+        seen["key_dir"] = key_dir
+        raise FileNotFoundError(2, "x", log)
+
+    monkeypatch.setenv(KEY_DIR_ENV, str(tmp_path / "k"))
+    monkeypatch.setattr(cli, "investigate_log", fake_investigate)
+    assert cli.main(["investigate", "missing.ulg"]) == 2
+    assert seen["key_dir"] == str(tmp_path / "k")

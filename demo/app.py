@@ -39,12 +39,14 @@ from air import __version__
 from air.api import ProcedureError, UnsupportedLogError, investigate_log
 from air.evidence.signing import (
     PUBLIC_KEY_FILE,
+    default_key_dir,
     load_or_create_key,
     public_key_fingerprint,
     public_pem,
 )
 
 RUNS_DIR = os.path.join(REPO, "demo", "demo_runs")
+KEY_DIR = default_key_dir()  # same key as the CLI: $AIR_KEY_DIR or ~/.air/keys
 SAMPLE_LOG = os.path.join(REPO, "fixtures", "75957ba9-f979-430d-a49c-8ef6e5ceec12.ulg")
 SAMPLE_PROVENANCE = (
     "Public log 75957ba9-f979-430d-a49c-8ef6e5ceec12 from the PX4 Flight Review "
@@ -243,7 +245,7 @@ def _execute(log_path: str, procedures_path: str, with_timestamp: bool, source_n
     out_dir = os.path.join(RUNS_DIR, run_id, "bundle")
     try:
         investigate_log(log_path, procedures_path, out_dir,
-                        os.path.join(REPO, "keys"), with_timestamp=with_timestamp)
+                        KEY_DIR, with_timestamp=with_timestamp)
     except (UnsupportedLogError, ProcedureError) as e:
         shutil.rmtree(os.path.join(RUNS_DIR, run_id), ignore_errors=True)
         return None, str(e)
@@ -280,7 +282,7 @@ def run_upload():
 
     out_dir = os.path.join(updir, "bundle")
     try:
-        investigate_log(log_path, proc_path, out_dir, os.path.join(REPO, "keys"),
+        investigate_log(log_path, proc_path, out_dir, KEY_DIR,
                         with_timestamp=bool(request.form.get("timestamp")))
     except (UnsupportedLogError, ProcedureError) as e:
         shutil.rmtree(updir, ignore_errors=True)
@@ -321,7 +323,7 @@ def result(run_id: str):
         manifest = json.load(f)
     ts_status = manifest.get("rfc3161_timestamp", {}).get("status", "absent")
     # from the operator's own key, not from the bundle being verified
-    fingerprint = public_key_fingerprint(public_pem(load_or_create_key(os.path.join(REPO, "keys"))))
+    fingerprint = public_key_fingerprint(public_pem(load_or_create_key(KEY_DIR)))
     return render_template_string(
         RESULT_HTML, css=BASE_CSS, run_id=run_id, short_id=run_id[:6],
         source_name=meta.get("source_name", "uploaded log"),
@@ -355,8 +357,8 @@ def verify(run_id: str):
     d = _run_dir(run_id)
     # The demo server is the operator here, so it verifies against its own
     # signing key (written by load_or_create_key) as the trust anchor.
-    load_or_create_key(os.path.join(REPO, "keys"))  # ensures the .pub.pem exists
-    pub = os.path.join(REPO, "keys", PUBLIC_KEY_FILE)
+    load_or_create_key(KEY_DIR)  # ensures the .pub.pem exists
+    pub = os.path.join(KEY_DIR, PUBLIC_KEY_FILE)
     p = subprocess.run([sys.executable, "verify.py", "--trusted-key", pub],
                        cwd=os.path.join(d, "bundle"), capture_output=True, text=True,
                        timeout=60)

@@ -67,7 +67,7 @@ sys.path.insert(0, REPO)
 
 from air import __version__
 from air.api import UnsupportedLogError, investigate_log
-from air.evidence.signing import PUBLIC_KEY_FILE
+from air.evidence.signing import PUBLIC_KEY_FILE, default_key_dir
 
 SEED = 42
 PER_LOG_CAP = 20 * 1024 * 1024          # 20 MB
@@ -115,7 +115,7 @@ def stripped_report_hash(report_path: str) -> str:
 def run_one(log_path: str, out_dir: str) -> dict:
     t0 = time.monotonic()
     try:
-        res = investigate_log(log_path, PROCEDURES, out_dir, os.path.join(REPO, "keys"),
+        res = investigate_log(log_path, PROCEDURES, out_dir, default_key_dir(),
                               with_timestamp=False)
     except UnsupportedLogError as e:
         return {"ok": False, "error_class": "unsupported", "error": str(e)[:200],
@@ -225,8 +225,8 @@ def main() -> int:
         d1 = os.path.join(work, f"det1_{lid}")
         d2 = os.path.join(work, f"det2_{lid}")
         try:
-            investigate_log(path, PROCEDURES, d1, os.path.join(REPO, "keys"), with_timestamp=False)
-            investigate_log(path, PROCEDURES, d2, os.path.join(REPO, "keys"), with_timestamp=False)
+            investigate_log(path, PROCEDURES, d1, default_key_dir(), with_timestamp=False)
+            investigate_log(path, PROCEDURES, d2, default_key_dir(), with_timestamp=False)
             h1 = stripped_report_hash(os.path.join(d1, "report.json"))
             h2 = stripped_report_hash(os.path.join(d2, "report.json"))
             determinism.append({"log_id": lid, "identical": h1 == h2})
@@ -240,7 +240,7 @@ def main() -> int:
     # --- verification + controlled tamper ---
     verification = []
     py = sys.executable
-    trusted = ["--trusted-key", os.path.join(REPO, "keys", PUBLIC_KEY_FILE)]
+    trusted = ["--trusted-key", os.path.join(default_key_dir(), PUBLIC_KEY_FILE)]
     for b in ver_bundles:
         lid = os.path.basename(b)[7:]
         v1 = subprocess.run([py, "verify.py", *trusted], cwd=b, capture_output=True)

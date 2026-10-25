@@ -1,7 +1,9 @@
 """AIR command-line interface.
 
     python -m air.cli investigate <log.ulg> [--procedures rules.json] [--out DIR]
-                                            [--no-timestamp]
+                                            [--keys DIR] [--no-timestamp]
+
+The signing key lives in $AIR_KEY_DIR, else ~/.air/keys (see signing.py).
 
 Thin wrapper over air.api.investigate_log — the single analysis pipeline
 shared with the web demo.
@@ -15,7 +17,7 @@ import sys
 
 from . import __version__
 from .api import ProcedureError, UnsupportedLogError, investigate_log
-from .evidence.signing import public_key_fingerprint
+from .evidence.signing import default_key_dir, public_key_fingerprint
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -25,7 +27,9 @@ def main(argv: list[str] | None = None) -> int:
     q.add_argument("log", help="path to PX4 .ulg flight log")
     q.add_argument("--procedures", help="path to procedures JSON ruleset")
     q.add_argument("--out", default=None, help="output bundle directory")
-    q.add_argument("--keys", default="keys", help="signing key directory")
+    q.add_argument("--keys", default=None,
+                   help="signing key directory (default: $AIR_KEY_DIR, else ~/.air/keys; "
+                        "a new key is generated there on first use)")
     q.add_argument("--no-timestamp", action="store_true", help="skip RFC 3161 timestamping")
     args = p.parse_args(argv)
 
@@ -34,7 +38,7 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"AIR v{__version__} — ingesting {os.path.basename(args.log)}")
     try:
-        result = investigate_log(args.log, args.procedures, out, args.keys,
+        result = investigate_log(args.log, args.procedures, out, args.keys or default_key_dir(),
                                  with_timestamp=not args.no_timestamp)
     except (UnsupportedLogError, ProcedureError) as e:
         print(f"error: {e}", file=sys.stderr)

@@ -34,6 +34,17 @@ def canonical_json_bytes(obj) -> bytes:
 
 PRIVATE_KEY_FILE = "air_signing_key.pem"
 PUBLIC_KEY_FILE = "air_signing_key.pub.pem"
+KEY_DIR_ENV = "AIR_KEY_DIR"
+
+
+def default_key_dir() -> str:
+    """$AIR_KEY_DIR if set, else ~/.air/keys.
+
+    Fixed regardless of the working directory, so running the CLI from a
+    different folder never silently generates a second signing key, and kept
+    outside the source tree so it cannot be committed by accident.
+    """
+    return os.path.expanduser(os.environ.get(KEY_DIR_ENV) or os.path.join("~", ".air", "keys"))
 
 
 def load_or_create_key(key_dir: str) -> Ed25519PrivateKey:
