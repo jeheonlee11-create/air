@@ -14,7 +14,7 @@ prefer compressed).
 | 1 | Site hero, trace draws in | "This is a real drone crash — a public flight log anyone can download. The owner's entire analysis was one sentence: 'my drone started to gain altitude sharply.'" |
 | 2 | Local demo: click "Run the sample crash instead" | "Drop that log into AIR. Under a second later, it's an incident record." |
 | 3 | Record page: chips + findings scroll | "Seven findings, each typed: measured evidence, the threshold it tripped, and where that threshold comes from. Battery hit zero percent — while it was still flying." |
-| 4 | Conformance table close-up | "AIR checked the flight against written procedures. Altitude limit 120 meters: the flight hit 120.04. That precision is the point — records get challenged." |
+| 4 | Conformance table close-up | "AIR checked the flight against written procedures. Height limit 120 meters above launch: the flight hit 121.57, past the one-meter measurement tolerance. Stating the tolerance is the point — records get challenged." |
 | 5 | Altitude chart, conflict annotation | "Two independent altitude sensors disagree by twenty meters at the crash. AIR doesn't pick a winner — it reports the conflict, so nobody builds a case on the wrong number." |
 | 6 | Click "Verify record now", PASS output | "And the whole record is sealed: hash tree, signature, offline verifier. Change one byte, verification fails." |
 | 7 | Site limitations section | "It's early: PX4 logs only, a 100-log public evaluation, every limitation published." |

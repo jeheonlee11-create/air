@@ -32,23 +32,23 @@ Click **"Run the sample crash instead"** — no upload needed. Everything runs l
 >
 > *(click "Run the sample crash instead" — processing takes under a second)*
 >
-> One upload, one record. Four critical findings, each with the evidence sample, the timestamp, and the threshold it tripped — and where that threshold comes from. The battery hit 0% in flight after sagging 59% below its starting voltage. The flight busted the 120-meter altitude rule in the ops manual — by four hundredths of a meter, and the record says exactly that: 120.04. And the log ends *in the air* at 12.6 meters — the classic signature of power loss.
+> One upload, one record. Five critical findings, each with the evidence sample, the timestamp, and the threshold it tripped — and where that threshold comes from. The battery hit 0% in flight, and in its last ten seconds the voltage collapsed by half. The flight broke the 120-meter height rule in the ops manual: 121.57 meters above the launch point, past the rule's one-meter measurement tolerance, and the record says which altitude reference it used. And the log ends *in the air* at about 14 meters above home — consistent with sudden power loss.
 >
 > Here's the part no log viewer does: AIR cross-checked the barometer against GPS altitude. They disagree by 20 meters right at the crash. The record doesn't hide that — it reports which sensors conflict, so nobody builds a conclusion on the wrong one.
 >
 > *(click "Verify record now")*
 >
-> And the whole record is tamper-evident: hash tree, signature, offline verifier. Change one byte of any finding and this verification fails. That's the product: from raw telemetry to a defensible, checkable incident record in seconds.
+> And the whole record is tamper-evident: hash tree, signature, offline verifier. Change one byte of any finding, or of the HTML page, and this verification fails; check it against the operator's published key fingerprint and a re-signed copy fails too. That's the product: from raw telemetry to a defensible, checkable incident record in seconds.
 
 ## 3-minute extended script
 
 1. **Setup (20 s).** "Drone programs generate incidents — crashes, flyaways, near-misses — and the record of what happened is usually a pilot's memory plus a log file nobody can read. Investigators, insurers, and safety managers need three answers: what happened, did we follow our own procedures, and can we prove the record wasn't massaged after the fact. AIR produces all three from the raw log."
 2. **Provenance (15 s).** Show the provenance card. "This is a public, real crash — log 75957ba9 from the PX4 corpus. The uploader's entire analysis was one sentence. Nothing in this demo is staged; you can download the same file and reproduce every number."
-3. **Run + summary (20 s).** Click the sample. Walk the chips: 4 critical, 3 warnings, procedures 4 pass / 2 fail. "Under a second of compute, deterministic rules only — no ML verdicts, every threshold cites its source."
+3. **Run + summary (20 s).** Click the sample. Walk the chips: 5 critical, 2 warnings, procedures 4 pass / 2 fail. "Under a second of compute, deterministic rules only — no ML verdicts, every threshold cites its source."
 4. **Findings discipline (45 s).** Open two findings and narrate the epistemics: "Each card separates **raw evidence** — the value, the timestamp, the exact telemetry channel — from the **deterministic calculation** — the threshold and its basis, here a ruleset ArduPilot shipped for years — from **interpretation**, which is worded as 'consistent with', never as a cause. The battery finding is measured fact. 'Possible power loss' is labeled inference. And where AIR can't know something, it says so —" show a NOT_EVALUABLE row or the coverage note. "Missing evidence is reported, never papered over. Upload a log that never flew, and AIR tells you that instead of inventing a crash."
-5. **Conformance (30 s).** Conformance table. "The operator's ops manual, as machine-checkable rules. Six rules; two failed, with the observed value and the moment it happened. 120.04 against a 120 limit — a marginal violation reported at full precision, because in an incident record precision *is* credibility."
-6. **Conflict (25 s).** Altitude-by-source chart + conflict finding. "Three independent altitude sources on one timeline. Barometer and GPS diverge 20 meters at the crash; the record quotes both and flags every altitude-dependent conclusion near that moment. Single-source tools can't tell you when their one source is lying."
-7. **Evidence layer (25 s).** Download the bundle, run the verifier (or click Verify). "Merkle tree over the record and the source-file digests, Ed25519 signature, optional trusted timestamp. The verifier is 200 lines of readable Python that runs offline — built to be audited by the other side's expert, not just ours."
+5. **Conformance (30 s).** Conformance table. "The operator's ops manual, as machine-checkable rules. Six rules; two failed, with the observed value and the moment it happened. 121.57 meters above home against a 120 limit, past the stated 1 m tolerance. A reading within the tolerance would be MARGINAL, not FAIL: the record never claims more precision than the sensors have."
+6. **Conflict (25 s).** Altitude-by-source chart + conflict finding. "Three altitude sources on one timeline, each with its own reference. Barometer and GPS, which are independent sensors, diverge 20 meters at the crash; the record quotes both and flags every altitude-dependent conclusion near that moment. Single-source tools can't tell you when their one source is lying."
+7. **Evidence layer (25 s).** Download the bundle, run the verifier (or click Verify). "Merkle tree over the record and the source-file digests, Ed25519 signature, optional trusted timestamp. The verifier is a single readable Python file that runs offline — built to be audited by the other side's expert, not just ours."
 8. **Close (10 s).** "Runs locally, one engine end to end, evaluated against a 100-log public sample with results published in the repo — including what it can't do yet. That honesty is the product."
 
 ## What AIR found that an ordinary log viewer leaves to a human
@@ -57,10 +57,10 @@ A log viewer (Flight Review, UAV Log Viewer, CSV export) *plots* this flight; a 
 
 | AIR output | The manual work it replaces |
 |---|---|
-| Log ends in flight at 12.6 m (INT-TRUNC, threshold cited) | Notice the log stops without a disarm; check final altitude; know that this pattern means power loss/impact |
-| Battery 0% + 59% voltage sag with timestamps | Read two channels, compute sag vs flight start, know sag thresholds |
+| Log ends in flight at 14.2 m above home (INT-TRUNC, threshold and reference cited) | Notice the log stops without a disarm; check final altitude; know that this pattern means power loss/impact |
+| Battery 0% + 51% voltage collapse within 10 s, with timestamps and current | Read voltage and current, separate load sag from normal discharge, know sag thresholds |
 | Baro-vs-GPS 20.3 m divergence at the crash moment, both values quoted | Overlay two altitude sources, offset-correct different references, spot the divergence window |
-| 120.04 m vs 120 m ops-manual limit, PASS/FAIL per rule with evidence sample | Open the ops manual, extract each limit, scrub the log for each extreme, write it up |
+| 121.57 m above home vs 120 m ops-manual limit (1 m tolerance), verdict per rule with evidence sample | Open the ops manual, extract each limit, scrub the log for each extreme, write it up |
 | Explicit "sources agree" statements and NOT_EVALUABLE gaps | Nobody writes down what they *checked and found fine* — which is exactly what an investigator or insurer needs |
 | Signed, offline-verifiable bundle | No manual equivalent exists |
 
@@ -75,10 +75,10 @@ A log viewer (Flight Review, UAV Log Viewer, CSV export) *plots* this flight; a 
 ## Limitations (say these out loud before anyone asks)
 
 1. **PX4 `.ulg` only today.** ArduPilot and DJI are unimplemented (DJI additionally requires a revocable vendor API key). The market-share majority of small drones is DJI — this demo does not cover them.
-2. **Evaluated on 100 public logs, not 436k.** Results: 99% ingestion, 0 false-positive ends-in-flight calls, determinism 10/10, tamper detection 5/5 — but recall of uploader-labeled "crashes" via the ends-in-flight signal is 12%: most crashes keep logging to the ground, and AIR does not yet detect ground-impact signatures. Full numbers and caveats: `eval/EVALUATION.md`.
-3. **"AGL" altitude is relative to the EKF origin**, not terrain-corrected; distance-from-home uses the EKF origin as home.
+2. **Evaluated on 100 public logs, not 436k, with the July 2026 engine** (not re-run since the October fixes). Results: 99% ingestion, 0 false-positive ends-in-flight calls, determinism 10/10, tamper detection 5/5 — but recall of uploader-labeled "crashes" via the ends-in-flight signal is 12%: most crashes keep logging to the ground, and AIR does not yet detect ground-impact signatures. Full numbers and caveats: `eval/EVALUATION.md`.
+3. **Altitude rules use height above the launch point**, not terrain-corrected AGL; without a logged home position they are NOT_EVALUABLE.
 4. **Conformance covers 6 quantitative rule types.** Real ops manuals contain weather minima, airspace, and crew rules AIR cannot yet express.
-5. **The cryptography proves integrity, not identity or truth.** It shows the record hasn't changed since signing and that the source files match their digests. It does not prove who signed (dev key on disk today; no key-distribution infrastructure), does not validate the TSA certificate chain in the bundled verifier, and does not make anything court-admissible or legally compliant — wording we deliberately never use.
+5. **The cryptography proves integrity, not identity or truth.** It shows the record hasn't changed since signing and that the source files match their digests. Given the operator's published fingerprint it shows which key signed, not who controls that key (key on disk today; no identity PKI). It validates the TSA certificate chain only when given a trusted CA (`--tsa-ca`). AIR's records are intended to support a qualified person's certification; AIR does not itself certify identity or admissibility, and we never call it court-admissible or legally compliant.
 6. **Single-source evidence in this demo** — one flight log plus procedures. The multi-source story (detection alerts, weather, Remote ID) is roadmap, not product.
 7. **Uploader labels in the corpus are noisy** — one "crash"-labeled fixture turned out to be a bench test that never armed (AIR abstained; that behavior is the feature).
 

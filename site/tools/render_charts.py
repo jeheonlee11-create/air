@@ -65,10 +65,12 @@ def main() -> int:
         f'<svg viewBox="0 0 {W} {H}" role="img" aria-labelledby="altchart-t altchart-d" '
         f'class="chart chart-alt" preserveAspectRatio="xMidYMid meet">')
     p.append('<title id="altchart-t">Altitude by source over the 594-second flight</title>')
-    p.append('<desc id="altchart-d">Three independent altitude traces — barometer, GPS, and '
-             'EKF-fused — plotted against flight time. Near the end of the flight the barometer '
-             'and GPS traces diverge by 20.3 meters, a procedure altitude limit is exceeded at '
-             '120.04 meters, and all traces stop while the aircraft is still airborne.</desc>')
+    p.append('<desc id="altchart-d">Three altitude traces with different references — '
+             'barometer, GPS (above sea level), and EKF (above its local origin) — plotted '
+             'against flight time. Near the end of the flight the barometer and GPS traces '
+             'diverge by 20.3 meters, the procedure height limit is exceeded at 121.57 meters '
+             'above the launch point, and all traces stop while the aircraft is still '
+             'airborne.</desc>')
     p.append(f'<rect x="0" y="0" width="{W}" height="{H}" fill="{PANEL}"/>')
 
     # grid + axes
@@ -98,11 +100,11 @@ def main() -> int:
                  f'fill="none" stroke="{color}" stroke-width="1.8" stroke-linejoin="round"/>')
         # legend chips drawn separately in HTML; keep SVG clean
 
-    # ALT-1 peak marker on EKF (T+586.9, 120.04)
+    # ALT-1 peak marker on the EKF trace (T+586.9; EKF-origin 120.04 m = 121.57 m above home)
     mx, my = sx(586.94), sy(120.04)
     p.append(f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="4.5" fill="{CRIT}"/>')
     p.append(f'<line x1="{mx:.1f}" y1="{my-8:.1f}" x2="{mx:.1f}" y2="{my-34:.1f}" stroke="{CRIT}" stroke-width="1"/>')
-    p.append(f'<text x="{mx-6:.1f}" y="{my-40:.1f}" text-anchor="end" class="anno anno-crit">120.04 m — ALT-1 limit is 120 m · FAIL</text>')
+    p.append(f'<text x="{mx-6:.1f}" y="{my-40:.1f}" text-anchor="end" class="anno anno-crit">121.57 m above home — ALT-1 limit is 120 m · FAIL</text>')
 
     # conflict annotation: double arrow between baro & GPS at T+580.5 (204.73 vs 164.01)
     ax = sx(580.48)
@@ -215,7 +217,7 @@ def main() -> int:
              f'stroke-width="1.6" stroke-linejoin="round"/>')
     for t, v, cls, label, anchor in (
             (579.24, None, "hm-bat", "battery 0%", "end"),
-            (586.94, 120.04, "hm-alt", "120.04 m", "end"),
+            (586.94, 120.04, "hm-alt", "121.6 m above home", "end"),
             (594.64, 12.64, "hm-end", "log ends in flight", "end")):
         yv = hy(v) if v is not None else hy(dict((round(pt[0], 2), pt[1]) for pt in ekf).get(579.24, 100))
         # nearest EKF value for battery marker

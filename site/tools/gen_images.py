@@ -61,7 +61,7 @@ def base_canvas(W, H, d):
     vmin = min(v for _, v in pts) - 6
     vmax = max(v for _, v in pts) + 10
     draw_trace(dr, pts, 60, H * 0.42, W - 120, H * 0.36, dur, vmin, vmax)
-    # markers: battery 0% (579.24), alt peak (586.94, 120.04), end (594.64, 12.64)
+    # markers on the EKF-origin trace: battery 0% (579.24), alt peak (586.94), end (594.64)
     for t, v in ((579.24, None), (586.94, 120.04), (594.64, 12.64)):
         if v is None:
             near = min(pts, key=lambda pv: abs(pv[0] - t))
@@ -104,7 +104,7 @@ def poster():
     dr.text((60, 268), "Public PX4 corpus log 75957ba9 · analyzed by the AIR engine",
             font=font(22, mono=True), fill=MUTED)
     dr.line([(60, H - 84), (W - 60, H - 84)], fill=GRIDC, width=1)
-    dr.text((60, H - 66), "battery 0% in flight · 120.04 m vs 120 m limit · baro/GPS disagree 20.3 m · log ends in flight",
+    dr.text((60, H - 66), "battery 0% · 121.57 m above home vs 120 m limit · baro/GPS 20.3 m apart · ends in flight",
             font=font(20, mono=True), fill=MUTED)
     img.save(os.path.join(OUT, "poster.png"), optimize=True)
 
