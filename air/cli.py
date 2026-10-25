@@ -14,7 +14,7 @@ import os
 import sys
 
 from . import __version__
-from .api import UnsupportedLogError, investigate_log
+from .api import ProcedureError, UnsupportedLogError, investigate_log
 from .evidence.signing import public_key_fingerprint
 
 
@@ -36,7 +36,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         result = investigate_log(args.log, args.procedures, out, args.keys,
                                  with_timestamp=not args.no_timestamp)
-    except UnsupportedLogError as e:
+    except (UnsupportedLogError, ProcedureError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
     except FileNotFoundError as e:

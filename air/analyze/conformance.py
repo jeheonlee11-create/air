@@ -19,6 +19,7 @@ a rule written as "AGL" cannot be checked against them honestly.
 from __future__ import annotations
 
 import json
+import os
 
 from ..ingest.ulog import NAV_STATE
 from ..schema import Finding, Incident, SourceFile
@@ -122,9 +123,79 @@ def verdict(value, op: str, limit, tolerance: float = 0.0) -> str:
     return "FAIL"
 
 
+class ProcedureError(ValueError):
+    """The procedures file is missing, not JSON, or not a valid ruleset."""
+
+
+METRICS = {"max_alt_agl_m", "max_dist_home_m", "max_groundspeed_ms", "min_gps_sats",
+           "battery_at_landing_pct", "modes_flown"}
+NUMERIC_OPS = {"<=", ">="}
+LIST_OPS = {"not_contains"}
+LIST_METRICS = {"modes_flown"}
+
+
+def _is_number(x) -> bool:
+    return isinstance(x, (int, float)) and not isinstance(x, bool)
+
+
+def validate_procedures(proc, origin: str = "procedures") -> dict:
+    """Check a parsed ruleset; raise ProcedureError naming every problem found."""
+    if not isinstance(proc, dict):
+        raise ProcedureError(f"{origin}: top level must be a JSON object with a \"rules\" list")
+    rules = proc.get("rules")
+    if not isinstance(rules, list) or not rules:
+        raise ProcedureError(f"{origin}: \"rules\" must be a non-empty list")
+    problems, seen = [], set()
+    for n, rule in enumerate(rules, start=1):
+        where = f"rule #{n}"
+        if not isinstance(rule, dict):
+            problems.append(f"{where}: must be an object")
+            continue
+        rid = rule.get("id")
+        if isinstance(rid, str) and rid.strip():
+            where = f"rule #{n} ({rid})"
+            if rid in seen:
+                problems.append(f"{where}: duplicate id")
+            seen.add(rid)
+        else:
+            problems.append(f"{where}: missing or empty \"id\" (string)")
+        if not isinstance(rule.get("description"), str):
+            problems.append(f"{where}: missing \"description\" (string)")
+        metric, op, limit = rule.get("metric"), rule.get("op"), rule.get("limit")
+        if metric not in METRICS:
+            problems.append(f"{where}: unknown metric {metric!r}; expected one of "
+                            f"{', '.join(sorted(METRICS))}")
+        if op not in NUMERIC_OPS | LIST_OPS:
+            problems.append(f"{where}: unknown op {op!r}; expected <=, >= or not_contains")
+        elif metric in METRICS and (op in LIST_OPS) != (metric in LIST_METRICS):
+            problems.append(f"{where}: op {op!r} cannot be used with metric {metric!r}")
+        if op in NUMERIC_OPS and not _is_number(limit):
+            problems.append(f"{where}: \"limit\" must be a number for op {op!r}")
+        if op in LIST_OPS and not (isinstance(limit, list)
+                                   and all(isinstance(x, str) for x in limit)):
+            problems.append(f"{where}: \"limit\" must be a list of mode names for not_contains")
+        if "tolerance" in rule and not (_is_number(rule["tolerance"]) and rule["tolerance"] >= 0):
+            problems.append(f"{where}: \"tolerance\" must be a non-negative number")
+    if problems:
+        raise ProcedureError(f"{origin}: invalid ruleset:\n  - " + "\n  - ".join(problems))
+    return proc
+
+
+def load_procedures(path: str) -> dict:
+    """Read and validate a procedures JSON file."""
+    name = os.path.basename(path)
+    try:
+        with open(path, encoding="utf-8") as f:
+            proc = json.load(f)
+    except FileNotFoundError as e:
+        raise ProcedureError(f"procedures file not found: {path}") from e
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        raise ProcedureError(f"{name}: not valid JSON ({e})") from e
+    return validate_procedures(proc, name)
+
+
 def check_conformance(inc: Incident, procedures_path: str) -> tuple[dict, list[Finding]]:
-    with open(procedures_path) as f:
-        proc = json.load(f)
+    proc = load_procedures(procedures_path)
     inc.sources.append(SourceFile.from_path(procedures_path, kind="procedures",
                                             meta={"name": proc.get("name", "")}))
     win = flight_window(inc)

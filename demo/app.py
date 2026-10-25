@@ -36,7 +36,7 @@ from flask import (
 )
 
 from air import __version__
-from air.api import UnsupportedLogError, investigate_log
+from air.api import ProcedureError, UnsupportedLogError, investigate_log
 from air.evidence.signing import (
     PUBLIC_KEY_FILE,
     load_or_create_key,
@@ -244,7 +244,7 @@ def _execute(log_path: str, procedures_path: str, with_timestamp: bool, source_n
     try:
         investigate_log(log_path, procedures_path, out_dir,
                         os.path.join(REPO, "keys"), with_timestamp=with_timestamp)
-    except UnsupportedLogError as e:
+    except (UnsupportedLogError, ProcedureError) as e:
         shutil.rmtree(os.path.join(RUNS_DIR, run_id), ignore_errors=True)
         return None, str(e)
     with open(os.path.join(RUNS_DIR, run_id, "meta.json"), "w") as f:
@@ -277,18 +277,12 @@ def run_upload():
     if pf is not None and pf.filename:
         proc_path = os.path.join(updir, "procedures.json")
         pf.save(proc_path)
-        try:
-            with open(proc_path) as pj:
-                json.load(pj)
-        except Exception:
-            shutil.rmtree(updir, ignore_errors=True)
-            return jsonify({"error": "The procedures file is not valid JSON."}), 415
 
     out_dir = os.path.join(updir, "bundle")
     try:
         investigate_log(log_path, proc_path, out_dir, os.path.join(REPO, "keys"),
                         with_timestamp=bool(request.form.get("timestamp")))
-    except UnsupportedLogError as e:
+    except (UnsupportedLogError, ProcedureError) as e:
         shutil.rmtree(updir, ignore_errors=True)
         return jsonify({"error": str(e)}), 422
     with open(os.path.join(updir, "meta.json"), "w") as f2:

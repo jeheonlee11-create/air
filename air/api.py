@@ -8,11 +8,13 @@ from __future__ import annotations
 import os
 
 from . import __version__
-from .analyze import check_conformance, run_all_analyzers
+from .analyze import ProcedureError, check_conformance, load_procedures, run_all_analyzers
 from .evidence import build_bundle
 from .ingest import ingest_ulog
 from .report import render_html
 from .schema import SEVERITY_ORDER
+
+__all__ = ["ProcedureError", "UnsupportedLogError", "investigate_log"]
 
 
 class UnsupportedLogError(Exception):
@@ -23,7 +25,10 @@ def investigate_log(log_path: str, procedures: str | None, out_dir: str,
                     key_dir: str, with_timestamp: bool) -> dict:
     """Run the full pipeline. Returns a dict with incident, findings,
     conformance, report, manifest, out_dir. Raises UnsupportedLogError for
-    files pyulog cannot parse."""
+    files pyulog cannot parse and ProcedureError for an invalid ruleset
+    (checked first, before any parsing work)."""
+    if procedures:
+        load_procedures(procedures)
     try:
         inc = ingest_ulog(log_path)
     except (TypeError, ValueError, IndexError) as e:
