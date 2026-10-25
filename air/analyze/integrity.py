@@ -12,7 +12,7 @@ from __future__ import annotations
 import math
 
 from ..schema import Finding, Incident
-from .base import flight_window
+from .base import arm_cycles
 
 FINAL_ALT_MAX_M = 3.0  # ArduPilot LogAnalyzer TestBrownout `finalAltMax`
 
@@ -21,13 +21,11 @@ def analyze(inc: Incident) -> list[Finding]:
     findings: list[Finding] = []
 
     # --- Ends-while-armed / brownout / power loss ---
-    win = flight_window(inc)
-    if win is not None:
-        armed_t, _end_t = win
-        still_armed_at_end = True
-        for ev in inc.sorted_events():
-            if ev.kind == "arming" and "DISARMED" in ev.message and ev.t_us >= armed_t:
-                still_armed_at_end = False
+    cycles = arm_cycles(inc)
+    if cycles:
+        # Only the LAST arm cycle decides: an earlier disarm (e.g. a landing
+        # followed by a second flight) says nothing about how the log ends.
+        still_armed_at_end = cycles[-1][1] is None
         if still_armed_at_end:
             alt = inc.series_or_none("alt_local_m") or inc.series_or_none("alt_baro_m")
             final_alt = alt.values[-1] if alt else None

@@ -8,21 +8,62 @@ No ML, no heuristics that can't be explained to an opposing expert.
 
 from __future__ import annotations
 
-from ..schema import Finding, Incident, Series
+import re
+
+from ..schema import Finding, Incident, Series, TimelineEvent
+
+_ARMED_RE = re.compile(r"\bARMED\b")
+_DISARMED_RE = re.compile(r"\bDISARMED\b")
+
+
+def arming_state(ev: TimelineEvent) -> bool | None:
+    """True for an arm event, False for a disarm event, None otherwise.
+
+    Ingest records the state in ev.data["armed"]; the message text is only a
+    fallback, matched on whole words so "DISARMED" is never read as "ARMED".
+    """
+    if ev.kind != "arming":
+        return None
+    if isinstance(ev.data.get("armed"), bool):
+        return ev.data["armed"]
+    if _DISARMED_RE.search(ev.message):
+        return False
+    if _ARMED_RE.search(ev.message):
+        return True
+    return None
+
+
+def arm_cycles(inc: Incident) -> list[tuple[int, int | None]]:
+    """[(t_armed, t_disarmed or None), ...] in time order.
+
+    A disarm with no preceding arm is ignored; a repeated arm while already
+    armed is ignored. The last cycle has t_disarmed=None if the log ends armed.
+    """
+    cycles: list[tuple[int, int | None]] = []
+    armed_at: int | None = None
+    for ev in inc.sorted_events():
+        state = arming_state(ev)
+        if state is True and armed_at is None:
+            armed_at = ev.t_us
+        elif state is False and armed_at is not None:
+            cycles.append((armed_at, ev.t_us))
+            armed_at = None
+    if armed_at is not None:
+        cycles.append((armed_at, None))
+    return cycles
 
 
 def flight_window(inc: Incident) -> tuple[int, int] | None:
-    """(t_us_takeoff, t_us_end_of_flight) using arming/land events; None if never armed."""
-    armed_t, disarmed_t = None, None
-    for ev in inc.sorted_events():
-        if ev.kind == "arming":
-            if "ARMED" in ev.message and armed_t is None:
-                armed_t = ev.t_us
-            if "DISARMED" in ev.message and armed_t is not None:
-                disarmed_t = ev.t_us
-    if armed_t is None:
+    """(first arm, last disarm or end of log); None if never armed.
+
+    With several arm cycles the window spans all of them, including any
+    ground time in between; analyzers report the timestamp of what they find.
+    """
+    cycles = arm_cycles(inc)
+    if not cycles:
         return None
-    return armed_t, (disarmed_t or inc.t1_us)
+    last_end = cycles[-1][1]
+    return cycles[0][0], (last_end if last_end is not None else inc.t1_us)
 
 
 def clip_series(s: Series, t0: int, t1: int) -> tuple[list[int], list[float]]:

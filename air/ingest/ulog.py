@@ -282,28 +282,28 @@ def _extract_events(u: ULog, inc: Incident) -> None:
         got_arming = True
         inc.add_event(TimelineEvent(
             init[0], "px4_ulog:actuator_armed.armed", "arming", "info",
-            "Vehicle ARMED (armed at log start)"))
+            "Vehicle ARMED (armed at log start)", {"armed": True}))
     for t, _old, new in _transitions(armed, "armed"):
         got_arming = True
         inc.add_event(TimelineEvent(
             t, "px4_ulog:actuator_armed.armed", "arming", "info",
-            "Vehicle ARMED" if new else "Vehicle DISARMED"))
+            "Vehicle ARMED" if new else "Vehicle DISARMED", {"armed": bool(new)}))
     if not got_arming:
         vs_arm = _topic(u, "vehicle_status")
         init = _initial(vs_arm, "arming_state")
         if init is not None and init[1] == 2:
             inc.add_event(TimelineEvent(
                 init[0], "px4_ulog:vehicle_status.arming_state", "arming", "info",
-                "Vehicle ARMED (armed at log start)"))
+                "Vehicle ARMED (armed at log start)", {"armed": True}))
         for t, old, new in _transitions(vs_arm, "arming_state"):
             if new == 2:
                 inc.add_event(TimelineEvent(
                     t, "px4_ulog:vehicle_status.arming_state", "arming", "info",
-                    "Vehicle ARMED"))
+                    "Vehicle ARMED", {"armed": True}))
             elif old == 2:
                 inc.add_event(TimelineEvent(
                     t, "px4_ulog:vehicle_status.arming_state", "arming", "info",
-                    "Vehicle DISARMED"))
+                    "Vehicle DISARMED", {"armed": False}))
 
     # Flight mode changes
     vs = _topic(u, "vehicle_status")
