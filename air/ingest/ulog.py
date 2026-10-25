@@ -125,6 +125,14 @@ def ingest_ulog(path: str) -> Incident:
     airframe = u.initial_parameters.get("SYS_AUTOSTART")
     if airframe is not None:
         inc.aircraft["sys_autostart"] = int(airframe)
+    # EKF primary height source; decides whether baro-vs-EKF is an independent check
+    for pname in ("EKF2_HGT_REF", "EKF2_HGT_MODE"):
+        if pname in u.initial_parameters:
+            code = int(u.initial_parameters[pname])
+            inc.aircraft["ekf_height_ref"] = {0: "barometer", 1: "GPS", 2: "range finder",
+                                              3: "vision"}.get(code, f"{pname}={code}")
+            inc.aircraft["ekf_height_ref_param"] = f"{pname}={code}"
+            break
 
     # ---- GPS (two topic generations, two coordinate encodings) ----
     gps = _topic(u, "vehicle_gps_position") or _topic(u, "sensor_gps")

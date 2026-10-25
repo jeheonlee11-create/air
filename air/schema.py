@@ -45,17 +45,30 @@ class Series:
     values: list[float]
     units: str = ""
 
-    def at_or_before(self, t: int) -> float | None:
-        """Last value at or before t (series are time-ordered)."""
+    def sample_at(self, t: int, max_age_us: int | None = None) -> tuple[int, float] | None:
+        """(t_sample, value) of the last sample at or before t (series are time-ordered).
+
+        With max_age_us, a sample older than t - max_age_us is stale and None is
+        returned: a sensor that stopped reporting is a gap, not its last value.
+        """
         lo, hi, ans = 0, len(self.t_us) - 1, None
         while lo <= hi:
             mid = (lo + hi) // 2
             if self.t_us[mid] <= t:
-                ans = self.values[mid]
+                ans = mid
                 lo = mid + 1
             else:
                 hi = mid - 1
-        return ans
+        if ans is None:
+            return None
+        if max_age_us is not None and t - self.t_us[ans] > max_age_us:
+            return None
+        return self.t_us[ans], self.values[ans]
+
+    def at_or_before(self, t: int, max_age_us: int | None = None) -> float | None:
+        """Value of sample_at(), or None (no sample yet, or stale)."""
+        hit = self.sample_at(t, max_age_us)
+        return hit[1] if hit else None
 
 
 @dataclass
