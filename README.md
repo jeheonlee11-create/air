@@ -7,6 +7,8 @@ crash or flyaway afterward, such as fleet operators, manufacturer support teams 
 investigators.
 
 [![CI](https://github.com/jeheonlee11-create/air/actions/workflows/ci.yml/badge.svg)](https://github.com/jeheonlee11-create/air/actions/workflows/ci.yml)
+
+![AIR local demo: incident record for a public PX4 crash log, with findings and altitude by source](docs/images/air-demo.png)
 Project site with a walkthrough of one public crash log: https://air.findanything.dev
 
 ## Why
