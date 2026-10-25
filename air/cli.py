@@ -49,7 +49,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  {len(inc.series)} series, {len(inc.events)} events, {inc.duration_s:.1f}s of log")
     if conformance:
         print(f"  conformance: {conformance['passed']} pass / {conformance['failed']} fail / "
-              f"{conformance['not_evaluable']} not evaluable")
+              f"{conformance['marginal']} marginal / {conformance['not_evaluable']} not evaluable")
     for f in findings:
         print(f"  [{f.severity.upper():8s}] {f.code}: {f.title}")
 

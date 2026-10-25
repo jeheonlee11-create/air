@@ -33,7 +33,9 @@ def test_crash_log_end_to_end(tmp_path):
     conf = res["conformance"]
     assert conf["failed"] == 2 and conf["not_evaluable"] == 0
     alt = next(r for r in conf["results"] if r["id"] == "ALT-1")
-    assert alt["verdict"] == "FAIL" and alt["observed"] == 120.04
+    # height above home (home_position.z is 1.5 m below the EKF origin in this log)
+    assert alt["verdict"] == "FAIL" and alt["observed"] == 121.57
+    assert alt["tolerance"] == 1.0 and "home" in alt["evidence"]["reference"]
 
 
 @needs_crash

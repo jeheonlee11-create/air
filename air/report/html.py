@@ -150,6 +150,7 @@ def _sev_chip(sev: str) -> str:
 
 def _verdict_chip(verdict: str) -> str:
     style = {"PASS": ("good", "&#10003; PASS"), "FAIL": ("critical", "&#10007; FAIL"),
+             "MARGINAL": ("warning", "~ MARGINAL"),
              "NOT_EVALUABLE": ("warning", "? NOT EVALUABLE")}[verdict]
     return (f'<span style="font-weight:600;color:{STATUS_TEXT[style[0]]}">{style[1]}</span>')
 
@@ -164,7 +165,7 @@ def render_html(inc: Incident, findings: list[Finding], conformance: dict | None
 
     # charts
     alt_defs = []
-    for key, label in (("alt_baro_m", "Barometer"), ("alt_gps_m", "GPS"), ("alt_local_m", "EKF fused")):
+    for key, label in (("alt_baro_m", "Barometer"), ("alt_gps_m", "GPS MSL"), ("alt_local_m", "EKF (origin)")):
         s = inc.series_or_none(key)
         if s:
             alt_defs.append((s, label))
@@ -237,6 +238,7 @@ def render_html(inc: Incident, findings: list[Finding], conformance: dict | None
         <div style="font-size:12.5px;color:{MUTED};margin-bottom:8px">Checked against:
           {esc(conformance.get("procedures_name",""))} &middot;
           {conformance["passed"]} passed &middot; {conformance["failed"]} failed &middot;
+          {conformance.get("marginal", 0)} marginal (within measurement tolerance) &middot;
           {conformance["not_evaluable"]} not evaluable</div>
         <table style="width:100%;border-collapse:collapse;font-size:12.5px" class="rules">
           <thead><tr style="text-align:left;color:{MUTED};font-size:11px">
@@ -293,7 +295,7 @@ def render_html(inc: Incident, findings: list[Finding], conformance: dict | None
   </div>
 
   {f'<h2 style="font-size:16px;margin:26px 0 8px">Altitude by source</h2>{alt_chart}' if alt_chart else ''}
-  {f'<div style="font-size:11.5px;color:{MUTED};margin-top:4px">Dashed red rules mark critical-finding timestamps. Independent altitude sources are plotted together deliberately: divergence between them is itself evidence (see conflict findings).</div>' if alt_chart else ''}
+  {f'<div style="font-size:11.5px;color:{MUTED};margin-top:4px">Dashed red rules mark critical-finding timestamps. The three sources use different references (barometric pressure altitude, GPS height above mean sea level, EKF height above its local origin), so compare their shapes, not their absolute values; divergence in shape is itself evidence (see conflict findings).</div>' if alt_chart else ''}
   {f'<h2 style="font-size:16px;margin:26px 0 8px">Battery voltage</h2>{bat_chart}' if bat_chart else ''}
 
   <h2 style="font-size:16px;margin:28px 0 8px">Findings</h2>

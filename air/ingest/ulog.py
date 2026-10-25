@@ -100,6 +100,60 @@ def _combined_series(inc: Incident, name: str, topic, base: str, how: str, units
     return s
 
 
+def _valid_mask(topic, flag: str) -> list[bool]:
+    n = len(topic.data["timestamp"])
+    if flag not in topic.data:
+        return [True] * n
+    return [bool(v) for v in topic.data[flag]]
+
+
+def _home_relative(inc: Incident, lp, home) -> None:
+    """Height above home and horizontal distance from home, in the EKF local frame.
+
+    home_position.x/y/z is the launch point in the same NED frame as
+    vehicle_local_position, so the differences are home-relative. The home
+    sample in force at each time is used (home is a state, re-set at arming).
+    """
+    if home is None or not all(k in home.data for k in ("x", "y", "z")):
+        inc.notes.append(
+            "No usable home_position topic in log: height above home and distance from "
+            "home are unavailable. Barometric and EKF-origin altitudes are not substituted "
+            "for height-above-launch rules (they use different references).")
+        return
+    ok_home = _valid_mask(home, "valid_lpos")
+    ht = [int(t) for t, ok in zip(home.data["timestamp"], ok_home, strict=True) if ok]
+    if not ht:
+        inc.notes.append("home_position present but never valid in the local frame "
+                         "(valid_lpos=0): home-relative height and distance unavailable.")
+        return
+    idx = [i for i, ok in enumerate(ok_home) if ok]
+    hx = Series("home_x", "", ht, [float(home.data["x"][i]) for i in idx])
+    hy = Series("home_y", "", ht, [float(home.data["y"][i]) for i in idx])
+    hz = Series("home_z", "", ht, [float(home.data["z"][i]) for i in idx])
+    z_ok, xy_ok = _valid_mask(lp, "z_valid"), _valid_mask(lp, "xy_valid")
+    t_h, v_h, t_d, v_d = [], [], [], []
+    for i, ts in enumerate(lp.data["timestamp"]):
+        ts = int(ts)
+        h_z = hz.at_or_before(ts)
+        if h_z is None:
+            continue  # before home was set
+        if z_ok[i]:
+            t_h.append(ts)
+            v_h.append(h_z - float(lp.data["z"][i]))  # NED: up is -z
+        if xy_ok[i] and "x" in lp.data and "y" in lp.data:
+            t_d.append(ts)
+            v_d.append(math.hypot(float(lp.data["x"][i]) - hx.at_or_before(ts),
+                                  float(lp.data["y"][i]) - hy.at_or_before(ts)))
+    if t_h:
+        inc.series["alt_above_home_m"] = Series(
+            "alt_above_home_m", "px4_ulog:home_position.z - vehicle_local_position.z",
+            t_h, v_h, "m above home")
+    if t_d:
+        inc.series["dist_home_m"] = Series(
+            "dist_home_m", "px4_ulog:vehicle_local_position.x/y - home_position.x/y (horizontal)",
+            t_d, v_d, "m from home")
+
+
 def ingest_ulog(path: str) -> Incident:
     u = ULog(path)
     src = SourceFile.from_path(path, kind="px4_ulog", meta={"topics": len(u.data_list)})
@@ -186,21 +240,25 @@ def ingest_ulog(path: str) -> Incident:
                          "position, home distance and UTC anchoring unavailable.")
 
     # ---- Altitude / position ----
-    _series(inc, "alt_baro_m", _topic(u, "vehicle_air_data"), ["baro_alt_meter"], "m", topic_label="vehicle_air_data")
+    # Three different altitude references, kept apart on purpose:
+    #   alt_baro_m        barometric pressure altitude (roughly MSL; drifts with weather)
+    #   alt_local_m       EKF height above the EKF's local origin (where it initialised)
+    #   alt_above_home_m  EKF height above the home (launch) position from home_position
+    # Only the last is used for "height above launch point" rules; none is true AGL
+    # over terrain that is not level with the launch point.
+    _series(inc, "alt_baro_m", _topic(u, "vehicle_air_data"), ["baro_alt_meter"],
+            "m (barometric)", topic_label="vehicle_air_data")
     lp = _topic(u, "vehicle_local_position")
     if lp is not None:
-        _series(inc, "alt_local_m", lp, ["z"], "m AGL(rel)", scale=-1.0, topic_label="vehicle_local_position")
-        if "x" in lp.data and "y" in lp.data:
-            t = lp.data["timestamp"]
-            dist = [math.hypot(float(x), float(y)) for x, y in zip(lp.data["x"], lp.data["y"], strict=False)]
-            inc.series["dist_home_m"] = Series(
-                "dist_home_m", "px4_ulog:vehicle_local_position.x/y (horizontal, NED origin)",
-                [int(x) for x in t], dist, "m")
+        _series(inc, "alt_local_m", lp, ["z"], "m above EKF origin", scale=-1.0,
+                topic_label="vehicle_local_position")
+        _series(inc, "alt_epv_m", lp, ["epv"], "m (1-sigma)", topic_label="vehicle_local_position")
         if "vx" in lp.data and "vy" in lp.data:
             t = lp.data["timestamp"]
             spd = [math.hypot(float(x), float(y)) for x, y in zip(lp.data["vx"], lp.data["vy"], strict=False)]
             inc.series["groundspeed_ms"] = Series(
                 "groundspeed_ms", "px4_ulog:vehicle_local_position.vx/vy", [int(x) for x in t], spd, "m/s")
+        _home_relative(inc, lp, _topic(u, "home_position"))
 
     # ---- Battery ----
     bat = _topic(u, "battery_status")

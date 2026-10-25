@@ -321,7 +321,8 @@ def result(run_id: str):
     n_warn = sum(1 for x in report["findings"] if x["severity"] == "warning")
     conf = report.get("conformance")
     conf_line = (f"procedures: {conf['passed']} pass / {conf['failed']} fail / "
-                 f"{conf['not_evaluable']} not evaluable" if conf else "no procedures")
+                 f"{conf.get('marginal', 0)} marginal / {conf['not_evaluable']} not evaluable"
+                 if conf else "no procedures")
     with open(os.path.join(d, "bundle", "manifest.json")) as f:
         manifest = json.load(f)
     ts_status = manifest.get("rfc3161_timestamp", {}).get("status", "absent")
