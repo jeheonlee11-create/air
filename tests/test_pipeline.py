@@ -54,11 +54,12 @@ def test_bundle_verifies_and_detects_tamper(tmp_path):
 
 
 @needs_crash
-def test_report_json_is_committed_leaf(tmp_path):
+def test_report_json_and_html_are_committed_leaves(tmp_path):
     out = str(tmp_path / "bundle")
     res = investigate_log(CRASH_LOG, None, out, str(tmp_path / "k"), with_timestamp=False)
     manifest = res["manifest"]
-    assert manifest["merkle"]["tree_size"] == 1 + len(res["report"]["sources"])
+    assert manifest["merkle"]["tree_size"] == 2 + len(res["report"]["sources"])
+    assert [d["kind"] for d in manifest["merkle"]["leaves"][:2]] == ["report.json", "report.html"]
     with open(os.path.join(out, "manifest.json")) as f:
         assert json.load(f)["signature"]["algorithm"] == "Ed25519"
 

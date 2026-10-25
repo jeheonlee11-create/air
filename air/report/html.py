@@ -1,7 +1,9 @@
 """Human-readable incident record rendering.
 
-The HTML is a *rendering* of report.json; report.json is the authoritative,
-canonical, signed record. The document is deliberately light-only and
+The HTML is a rendering of report.json. Both are leaves of the bundle's Merkle
+tree, so both are covered by the signature; report.json is the machine-readable
+record. Because this page is hashed into the tree, it cannot show the Merkle
+root itself; it shows the signing-key fingerprint and points to manifest.json. The document is deliberately light-only and
 print-oriented — it is an evidence document, styled like paper.
 
 Charts follow the dataviz reference palette (first three categorical slots,
@@ -14,7 +16,6 @@ from __future__ import annotations
 import html as html_mod
 import math
 
-from ..evidence.signing import public_key_fingerprint
 from ..schema import SEVERITY_ORDER, Finding, Incident, Series
 
 # --- reference palette (light mode) ---
@@ -32,10 +33,6 @@ STATUS_TEXT = {"critical": "#a02020", "warning": "#8a5a00", "info": "#52514e", "
 
 def esc(s) -> str:
     return html_mod.escape(str(s))
-
-
-def _key_fingerprint(manifest: dict) -> str:
-    return public_key_fingerprint(manifest["signature"]["public_key_pem"])
 
 
 def _downsample(t: list[int], v: list[float], n: int = 400):
@@ -156,7 +153,7 @@ def _verdict_chip(verdict: str) -> str:
 
 
 def render_html(inc: Incident, findings: list[Finding], conformance: dict | None,
-                manifest: dict, generator_version: str) -> str:
+                key_fingerprint: str, generator_version: str) -> str:
     findings = sorted(findings, key=lambda f: (SEVERITY_ORDER.get(f.severity, 3), f.code))
     n_crit = sum(1 for f in findings if f.severity == "critical")
     n_warn = sum(1 for f in findings if f.severity == "warning")
@@ -176,11 +173,6 @@ def render_html(inc: Incident, findings: list[Finding], conformance: dict | None
     utc_note = (f"UTC anchored via {esc(inc.utc_anchor.source)}" if inc.utc_anchor
                 else "No UTC anchor in log — times are relative to log start")
     home_note = (f"{inc.home['lat']:.6f}, {inc.home['lon']:.6f}" if inc.home else "unavailable")
-
-    ts_info = manifest.get("rfc3161_timestamp", {})
-    ts_line = (f"RFC 3161 token from {esc(ts_info.get('tsa',''))}, genTime {esc(ts_info.get('gen_time',''))}"
-               if ts_info.get("status") == "ok"
-               else f"not attested ({esc(ts_info.get('status','absent'))})")
 
     events_rows = []
     shown = [e for e in inc.sorted_events() if e.kind != "message" or e.severity != "info"]
@@ -314,14 +306,18 @@ def render_html(inc: Incident, findings: list[Finding], conformance: dict | None
       <th style="padding:4px 8px 4px 0">KIND</th><th>FILE</th><th>SHA-256</th><th>SIZE</th></tr></thead>
     <tbody>{src_rows}</tbody></table>
   <div style="font-size:12px;color:{INK2};margin-top:10px;line-height:1.6">
-    Merkle root (RFC 9162-SHA256): <span style="font-family:ui-monospace,monospace;font-size:10.5px;word-break:break-all">{esc(manifest['merkle']['root_hex'])}</span><br>
-    Record signature: Ed25519 over the Merkle root &middot; public key embedded in manifest.json (fingerprint <span style="font-family:ui-monospace,monospace;font-size:10.5px;word-break:break-all">{esc(_key_fingerprint(manifest))}</span>; compare with the operator's published fingerprint)<br>
-    Independent time attestation: {ts_line}<br>
-    To verify this record: <span style="font-family:ui-monospace,monospace">python3 verify.py --fingerprint &lt;published fingerprint&gt;</span> inside the bundle directory. Any altered byte in report.json or any source file breaks the signature; a re-signed copy is caught by the fingerprint check.
+    Signing key fingerprint (SHA-256): <span style="font-family:ui-monospace,monospace;font-size:10.5px;word-break:break-all">{esc(key_fingerprint)}</span>.
+    Compare it with the fingerprint the operator published separately; this page cannot vouch for itself.<br>
+    This page and report.json are leaves of an RFC 9162 Merkle tree whose root is signed with Ed25519. The root, the
+    signature and any RFC 3161 timestamp are in <span style="font-family:ui-monospace,monospace">manifest.json</span>
+    (this page is hashed into the tree, so it cannot contain the root).<br>
+    To verify: <span style="font-family:ui-monospace,monospace">python3 verify.py --fingerprint &lt;published fingerprint&gt;</span>
+    inside the bundle directory. Changing any byte of report.json, of this page, or of a referenced source file makes
+    verification fail; a copy re-signed with a different key fails the fingerprint check.
   </div>
 
   <div style="margin-top:34px;padding-top:14px;border-top:1px solid {GRID};font-size:11px;color:{MUTED};line-height:1.6">
-    This document is a rendering of <span style="font-family:ui-monospace,monospace">report.json</span>, the authoritative signed record.
+    This page is a human-readable rendering of <span style="font-family:ui-monospace,monospace">report.json</span>; both are covered by the bundle signature.
     All findings are produced by deterministic, documented rules (no machine-learning inference); every threshold cites its basis.
     Cryptographic integrity protections are designed to support authentication of this record as an electronic record
     (cf. Fed. R. Evid. 902(13)/(14)); authentication is distinct from admissibility, and conclusions about cause

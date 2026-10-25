@@ -209,8 +209,8 @@ RESULT_HTML = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <pre id="vout" role="status" aria-live="polite" style="display:none;background:var(--surface);
   border:1px solid var(--grid);border-radius:8px;padding:12px;font-size:12px;
   white-space:pre-wrap;max-height:260px;overflow:auto"></pre>
-<p class="note">The bundle contains <code>report.json</code> (the authoritative signed
-record), <code>report.html</code>, <code>manifest.json</code>, and <code>verify.py</code>.
+<p class="note">The bundle contains <code>report.json</code> and <code>report.html</code>
+(both covered by the signature), <code>manifest.json</code>, and <code>verify.py</code>.
 To verify independently: unzip, then run <code>python3 verify.py --fingerprint
 {{ fingerprint }}</code> in the bundle directory (in real use, take the fingerprint from
 the operator, not from this page or the bundle) (requires Python 3.10+ and the <code>cryptography</code> package; no network

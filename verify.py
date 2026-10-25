@@ -8,13 +8,19 @@ Run from inside a bundle directory:
 
 Checks, in order:
   1. report.json matches the Merkle leaf it claims to be
-  2. every source-file digest leaf verifies against the Merkle root
-  3. the Ed25519 signature over the Merkle root verifies, and the signer is the
+  2. report.html matches its leaf (bundles that commit it; older bundles get a
+     warning that the page is an unsigned rendering)
+  3. every source-file digest leaf verifies against the Merkle root
+  4. the Ed25519 signature over the Merkle root verifies, and the signer is the
      key you trust (--trusted-key / --fingerprint, obtained OUTSIDE the bundle)
-  4. (if present) the RFC 3161 token: its own messageImprint matches the root,
+  5. (if present) the RFC 3161 token: its own messageImprint matches the root,
      its CMS signature verifies with the certificate embedded in the token, and
      (with --tsa-ca) the TSA certificate chain validates via `openssl ts -verify`
-  5. (optional) any source files present alongside the bundle re-hash correctly
+  6. (optional) any source files present alongside the bundle re-hash correctly
+
+The leaf layout is read from report.json ("bundle_layout"), which is itself
+leaf 0, so it cannot be altered (e.g. to drop report.html) without failing
+check 1.
 
 The public key inside manifest.json is NOT a trust anchor: whoever edits the
 record can re-sign it with a fresh key. Without --trusted-key/--fingerprint the
@@ -346,15 +352,35 @@ def main(argv: list[str] | None = None) -> int:
     check("report.json is the record committed to the Merkle root",
           verify_inclusion(report_bytes, 0, tree_size, proofs[0], root))
 
-    # 2. source digest leaves
     report = json.loads(report_bytes)
-    for i, src in enumerate(report.get("sources", []), start=1):
+    layout = report.get("bundle_layout") or {}
+
+    # 2. report.html
+    html_path = os.path.join(args.bundle, "report.html")
+    html_leaf = layout.get("report_html_leaf")
+    if html_leaf is not None:
+        try:
+            with open(html_path, "rb") as f:
+                html_bytes = f.read()
+        except FileNotFoundError:
+            check("report.html is committed to the Merkle root", False,
+                  "report.json says report.html is a signed leaf, but the file is missing")
+        else:
+            check("report.html is committed to the Merkle root",
+                  verify_inclusion(html_bytes, html_leaf, tree_size,
+                                   proofs.get(html_leaf, []), root))
+    elif os.path.exists(html_path):
+        print("[WARN] report.html is NOT covered by the signature in this bundle (older "
+              "format); treat it as an unsigned rendering and rely on report.json")
+
+    # 3. source digest leaves
+    for i, src in enumerate(report.get("sources", []), start=layout.get("first_source_leaf", 1)):
         leaf = src["sha256"].encode("ascii")
         check(f"source digest committed: {os.path.basename(src['path'])}",
               verify_inclusion(leaf, i, tree_size, proofs.get(i, []), root),
               src["sha256"][:16] + "…")
 
-    # 3. signature over root, and whether the signer is the key we trust
+    # 4. signature over root, and whether the signer is the key we trust
     anchored = bool(args.trusted_key or args.fingerprint)
     try:
         from cryptography.hazmat.primitives import serialization
@@ -390,7 +416,7 @@ def main(argv: list[str] | None = None) -> int:
                   "own. Rerun with --fingerprint <sha256> or --trusted-key <pem> obtained from "
                   "the operator out of band.")
 
-    # 4. RFC 3161 timestamp token
+    # 5. RFC 3161 timestamp token
     ts = manifest.get("rfc3161_timestamp", {})
     if ts.get("tsr_der_b64"):
         tsr = base64.b64decode(ts["tsr_der_b64"])
@@ -423,7 +449,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         print(f"[INFO] no RFC 3161 token in bundle (status: {ts.get('status', 'absent')})")
 
-    # 5. re-hash any source files that are locally present
+    # 6. re-hash any source files that are locally present
     for src in report.get("sources", []):
         base = os.path.basename(src["path"])
         for candidate in (src["path"], os.path.join(args.bundle, base),

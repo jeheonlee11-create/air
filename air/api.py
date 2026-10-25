@@ -73,11 +73,10 @@ def investigate_log(log_path: str, procedures: str | None, out_dir: str,
     }
 
     os.makedirs(out_dir, exist_ok=True)
-    manifest = build_bundle(report, out_dir, key_dir, with_timestamp=with_timestamp)
-
-    html = render_html(inc, findings, conformance, manifest, __version__)
-    with open(os.path.join(out_dir, "report.html"), "w") as f:
-        f.write(html)
+    # report.html is rendered before signing so it is a committed Merkle leaf
+    manifest = build_bundle(
+        report, out_dir, key_dir, with_timestamp=with_timestamp,
+        render_html=lambda fp: render_html(inc, findings, conformance, fp, __version__))
 
     return {"incident": inc, "findings": findings, "conformance": conformance,
             "report": report, "manifest": manifest, "out_dir": out_dir}
